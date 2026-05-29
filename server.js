@@ -12,7 +12,7 @@ app.get('/api/search', async (req, res) => {
     let url = 'https://api.mercadolibre.com/sites/MLC/search?sort=' + (sort||'sold_quantity_desc') + '&limit=' + (limit||20);
     if (q) url += '&q=' + encodeURIComponent(q);
     if (category) url += '&category=' + category;
-    const headers = { 'Authorization': 'Bearer ' + (token||'') };
+    const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
     const r = await fetch(url, { headers });
     const data = await r.json();
     res.json(data);
@@ -21,10 +21,12 @@ app.get('/api/search', async (req, res) => {
 
 app.get('/api/trends/:catId', async (req, res) => {
   try {
+    const { token } = req.query;
     const url = req.params.catId === 'MLC'
       ? 'https://api.mercadolibre.com/trends/MLC'
       : 'https://api.mercadolibre.com/trends/MLC/' + req.params.catId;
-    const r = await fetch(url);
+    const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+    const r = await fetch(url, { headers });
     const data = await r.json();
     res.json(data);
   } catch(e) { res.status(500).json({error: e.message}); }
