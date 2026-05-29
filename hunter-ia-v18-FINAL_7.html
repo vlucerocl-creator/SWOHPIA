@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Gestión Ecommerce</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070B14;--surface:#0C1220;--surface2:#111827;--surface3:#162033;
+  --border:#1A2540;--border2:#243050;--text:#FFFFFF;--muted:#4A6080;--muted2:#8AA0B8;
+  --cyan:#5BC8D8;--cyan-dim:#3A8090;--cyan-glow:rgba(91,200,216,0.12);--stat:#7A9AB0;
+  --sb-full:220px;--sb-mini:56px;--nav-h:52px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(91,200,216,0.06) 0%,transparent 70%);pointer-events:none}
+.login-box{position:relative;width:380px;background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:2.5rem 2rem;animation:fadeUp 0.4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem;justify-content:center}
+.login-icon{width:32px;height:32px;background:var(--cyan);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.login-icon svg{width:18px;height:18px;fill:var(--bg)}
+.login-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-0.02em;color:var(--text)}
+.login-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:-0.02em}
+.login-sub{font-size:11px;color:var(--muted2);text-align:center;margin-bottom:1.75rem;font-family:'DM Mono',monospace}
+.login-field{margin-bottom:11px}
+.login-field label{display:block;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;font-family:'DM Mono',monospace}
+.login-field input{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s}
+.login-field input:focus{border-color:var(--cyan-dim)}
+.login-field input::placeholder{color:var(--muted)}
+.login-btn{width:100%;padding:11px;border-radius:8px;border:none;background:var(--cyan);color:var(--bg);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity 0.15s;letter-spacing:0.02em;margin-top:4px}
+.login-btn:hover{opacity:0.85}
+.login-divider{display:flex;align-items:center;gap:12px;margin:14px 0}
+.login-divider span{font-size:10px;color:var(--muted);white-space:nowrap;font-family:'DM Mono',monospace}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.meli-btn{width:100%;padding:11px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:10px}
+.meli-btn:hover{background:var(--surface2);border-color:var(--muted)}
+.meli-logo{width:20px;height:20px;border-radius:4px;background:#FFE600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.meli-logo span{font-size:11px;font-weight:900;color:#333;font-family:'Syne',sans-serif}
+.login-footer{text-align:center;margin-top:1.5rem;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* APP */
+#app{display:none;height:100vh;flex-direction:column}
+#app.visible{display:flex}
+
+/* TOP NAV */
+.topnav{height:var(--nav-h);background:rgba(7,11,20,0.98);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1rem;gap:10px;flex-shrink:0;z-index:50}
+.tn-toggle{width:32px;height:32px;border-radius:7px;border:1px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;flex-shrink:0;transition:background 0.15s}
+.tn-toggle:hover{background:var(--surface2)}
+.tn-toggle span{display:block;width:14px;height:1.5px;background:var(--muted2);border-radius:2px;transition:all 0.2s}
+.tn-logo{display:flex;align-items:center;gap:8px;margin-right:auto}
+.tn-icon{width:22px;height:22px;background:var(--cyan);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tn-icon svg{width:12px;height:12px;fill:var(--bg)}
+.tn-brand{font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;letter-spacing:-0.01em;color:var(--text)}
+.tn-brand small{display:block;font-size:9px;font-family:'DM Mono',monospace;color:var(--muted2);font-weight:400;letter-spacing:0.04em;line-height:1}
+.tn-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px;border-radius:8px;transition:background 0.15s}
+.tn-user:hover{background:var(--surface2)}
+.tn-avatar{width:28px;height:28px;border-radius:50%;background:var(--surface3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted2);font-family:'DM Mono',monospace}
+.tn-name{font-size:12px;font-weight:500;color:var(--muted2)}
+.tn-logout{font-size:10px;color:var(--muted);cursor:pointer;padding:4px 10px;border-radius:6px;border:1px solid var(--border);font-family:'DM Mono',monospace;transition:all 0.12s}
+.tn-logout:hover{color:var(--text);border-color:var(--muted)}
+
+/* BODY */
+.app-body{display:flex;flex:1;overflow:hidden}
+
+
+.hidden-sb{width:0!important;opacity:0;pointer-events:none;overflow:hidden;padding:0!important}
+/* HAMBURGER */
+.tn-hamburger{display:flex;flex-direction:column;justify-content:center;gap:4px;width:32px;height:32px;cursor:pointer;padding:6px;border-radius:7px;border:1px solid var(--border2);background:transparent;flex-shrink:0;transition:background 0.15s}
+.tn-hamburger:hover{background:var(--surface2)}
+.tn-hamburger span{display:block;width:14px;height:1.5px;background:var(--muted2);border-radius:2px;transition:all 0.25s}
+.sidebar-hidden .tn-hamburger span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.sidebar-hidden .tn-hamburger span:nth-child(2){opacity:0;transform:translateX(-6px)}
+.sidebar-hidden .tn-hamburger span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+/* SIDEBAR DOCK */
+.sidebar{width:88px;transition:width 0.25s cubic-bezier(0.4,0,0.2,1),opacity 0.2s,padding 0.25s;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding:12px 0;gap:4px;overflow:visible;position:relative;z-index:10}
+.sidebar-section{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-family:'DM Mono',monospace;margin-bottom:4px;text-align:center}
+.sidebar-divider{width:44px;height:1px;background:var(--border);margin:2px 0}
+.sidebar-spacer{flex:1}
+
+.mod-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:68px;height:68px;border-radius:14px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);position:relative;transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);overflow:visible}
+.mod-tab:hover{background:var(--surface3);border-color:var(--border2);transform:scale(1.06)}
+.mod-tab.active{background:var(--surface3);border-color:var(--border2);box-shadow:0 0 0 1px var(--border2),0 4px 20px rgba(0,0,0,0.35)}
+.mod-tab.active:hover{transform:scale(1.04)}
+.mt-icon{font-size:1.7rem;line-height:1;transition:transform 0.2s}
+.mod-tab:hover .mt-icon{transform:scale(1.12)}
+.mt-num{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);line-height:1;position:absolute;top:7px;right:9px}
+.mod-tab.active .mt-num{color:var(--cyan)}
+.mt-name{font-size:9px;font-weight:600;color:var(--muted2);font-family:'DM Sans',sans-serif;text-align:center;line-height:1}
+.mod-tab.active .mt-name{color:var(--text)}
+.active-bar{position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:28px;background:var(--cyan);border-radius:0 3px 3px 0;opacity:0;transition:opacity 0.15s}
+.mod-tab.active .active-bar{opacity:1}
+
+
+
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;position:relative}
+
+/* INNER NAV */
+.inner-nav{height:44px;background:rgba(7,11,20,0.92);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:2px;position:sticky;top:0;z-index:40;backdrop-filter:blur(8px)}
+.inner-nav-pills{display:flex;align-items:center;gap:4px;padding:3px;position:relative}
+.inner-tab{padding:5px 14px;border-radius:7px;border:1px solid transparent;background:transparent;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--muted2);transition:all 0.2s;white-space:nowrap}
+.inner-tab:hover{color:var(--text);background:var(--surface2)}
+.inner-tab.active{background:var(--surface2);border-color:var(--border2)}
+.tab-tend{color:#5BC8D8}.tab-tend:hover,.tab-tend.active{color:#5BC8D8}
+.tab-hunt{color:#E07B8A}.tab-hunt:hover,.tab-hunt.active{color:#E07B8A}
+
+.tab-saved{color:#FFB800}.tab-saved:hover,.tab-saved.active{color:#FFB800}
+.pill-indicator{display:none}
+
+/* PAGES */
+.page{display:none;padding:1.25rem 1.25rem 2.5rem;animation:fadeIn 0.18s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.sec-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:3px}
+.sec-sub{font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace;margin-bottom:1.25rem}
+
+/* MODULE OVERVIEW */
+.mod-overview{max-width:580px;padding:1.5rem}
+.mod-ov-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);font-size:10px;font-family:'DM Mono',monospace;color:var(--muted2);margin-bottom:1rem}
+.mod-ov-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:8px}
+.mod-ov-desc{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:1.25rem}
+.mod-ov-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem}
+.moc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem}
+.moc-label{font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:5px}
+.moc-text{font-size:12px;color:var(--text);line-height:1.5}
+.mod-ov-soon{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1px solid var(--border2);font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace}
+
+/* TENDENCIA */
+.cat-selector{padding:.5rem 0;margin-bottom:1rem}
+.cat-sel-title{font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:8px}
+.cat-main{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.cat-sub{display:flex;gap:6px;flex-wrap:wrap;min-height:26px;align-items:center}
+.cbtn{padding:4px 11px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;transition:all 0.12s}
+.cbtn:hover{border-color:var(--cyan-dim);color:var(--text)}
+.cbtn.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-glow)}
+.sub-arrow{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.trends-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tc-title{font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:.85rem;font-family:'DM Mono',monospace}
+.ti{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--border)}
+.ti:last-child{border-bottom:none}
+.ti-rank{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:14px;flex-shrink:0}
+.ti-kw{font-size:12px;font-weight:500;flex:1;color:var(--text)}
+.ti-bar{width:55px;height:2px;background:var(--border2);border-radius:2px;flex-shrink:0}
+.ti-fill{height:2px;border-radius:2px;background:var(--cyan-dim)}
+.ttag{font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:20px;white-space:nowrap;border:1px solid var(--border2);color:var(--muted2)}
+.trends-empty{text-align:center;padding:3rem;color:var(--muted);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+
+/* PRODUCT HUNTER */
+.mode-row{display:flex;gap:6px;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px}
+.mode-pill{flex:1;padding:7px 12px;border-radius:6px;border:1px solid transparent;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;gap:10px}
+.mode-pill:hover{background:var(--surface2)}
+.mode-pill.sel{background:var(--surface2);border-color:var(--border2)}
+.mp-label{font-size:12px;font-weight:500;color:var(--text)}
+.mp-desc{font-size:10px;color:var(--muted2)}
+.mp-cnt{color:var(--muted2);font-family:'DM Mono',monospace;font-size:10px;margin-left:auto;white-space:nowrap}
+.filters{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:.9rem}
+.fb{padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;font-size:10px;font-family:'DM Mono',monospace;transition:all 0.12s}
+.fb:hover{color:var(--text);border-color:var(--muted)}
+.fb.active{background:var(--surface2);color:var(--text);border-color:var(--muted)}
+.csv-btn{margin-left:auto}
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{text-align:left;font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted2);padding:9px 11px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'DM Mono',monospace}
+td{padding:9px 11px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.pname{color:var(--text);font-size:12px;font-weight:500;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4;margin-bottom:3px}
+.cp-btn{display:inline-flex;align-items:center;font-size:9px;color:var(--muted);background:none;border:1px solid var(--border2);border-radius:20px;padding:2px 7px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.12s}
+.cp-btn:hover{color:var(--text);border-color:var(--muted)}
+.cp-btn.ok{color:var(--cyan);border-color:var(--cyan-dim)}
+.vend{font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'DM Mono',monospace}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:600;white-space:nowrap;font-family:'DM Mono',monospace;border:1px solid var(--border2);color:var(--text)}
+.price{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;white-space:nowrap;color:var(--text)}
+.cat-pill{font-size:9px;padding:2px 6px;border-radius:20px;font-family:'DM Mono',monospace;white-space:nowrap;border:1px solid var(--border2);color:var(--muted2)}
+.mode-lbl{font-size:9px;font-family:'DM Mono',monospace;color:var(--muted2)}
+.empty{text-align:center;padding:2.5rem;color:var(--muted);font-size:13px}
+
+/* MATCH ACTION BTN */
+.match-action{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;transition:all 0.12s;white-space:nowrap}
+.match-action:hover{border-color:var(--cyan-dim);color:var(--cyan);background:var(--cyan-glow)}
+.search-row{display:flex;gap:8px;margin-bottom:1rem;position:relative}
+.search-input-wrap{flex:1;position:relative}
+.search-input{width:100%;padding:9px 14px 9px 36px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s}
+.search-input:focus{border-color:var(--cyan-dim)}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--muted)}
+.search-go{padding:9px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;transition:all 0.12s}
+.search-go:hover{border-color:var(--muted);background:var(--surface3)}
+.hist-toggle{padding:9px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface);color:var(--muted2);font-size:11px;font-family:'DM Mono',monospace;cursor:pointer;white-space:nowrap;transition:all 0.12s;display:flex;align-items:center;gap:6px}
+.hist-toggle:hover{border-color:var(--muted);color:var(--text)}
+.hist-toggle.open{border-color:var(--cyan-dim);color:var(--cyan)}
+.hist-panel{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:.85rem;margin-bottom:1rem;display:none}
+.hist-panel.visible{display:block}
+.hist-title{font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:8px}
+.hist-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:7px;cursor:pointer;transition:background 0.12s;border:1px solid transparent}
+.hist-item:hover{background:var(--surface2);border-color:var(--border)}
+.hist-item.active-hist{background:var(--surface2);border-color:var(--border2)}
+.hi-icon{font-size:12px;flex-shrink:0}
+.hi-info{flex:1;min-width:0}
+.hi-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-meta{font-size:10px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:1px}
+.hi-badge{font-size:9px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);color:var(--muted2);white-space:nowrap}
+.hi-badge.active-badge{border-color:var(--cyan-dim);color:var(--cyan)}
+
+/* BELL NOTIFICATION */
+.bell-wrap{position:relative;cursor:pointer;padding:6px 8px;border-radius:8px;transition:background 0.15s}
+.bell-wrap:hover{background:var(--surface2)}
+.bell-icon{font-size:16px;color:var(--muted2)}
+.bell-dot{position:absolute;top:5px;right:6px;width:7px;height:7px;background:#FF5C5C;border-radius:50%;border:1.5px solid var(--bg);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.bell-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:300px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:500;display:none;overflow:hidden}
+.bell-dropdown.open{display:block;animation:dropIn 0.15s ease}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.bell-header{padding:10px 14px;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;border-bottom:1px solid var(--border)}
+.bell-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background 0.12s;cursor:pointer}
+.bell-item:last-child{border-bottom:none}
+.bell-item:hover{background:var(--surface2)}
+.bell-dot2{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.bell-text{font-size:12px;color:var(--text);line-height:1.4;flex:1}
+.bell-time{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap;margin-top:2px}
+
+/* AVATAR DROPDOWN */
+.avatar-wrap{position:relative}
+.avatar-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:180px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:500;display:none;overflow:hidden}
+.avatar-dropdown.open{display:block;animation:dropIn 0.15s ease}
+.av-item{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all 0.12s;border-bottom:1px solid var(--border)}
+.av-item:last-child{border-bottom:none}
+.av-item:hover{background:var(--surface2);color:var(--text)}
+.av-item.danger:hover{color:#FF5C5C}
+
+/* DATE FILTER */
+.date-filter{display:flex;gap:4px;margin-bottom:1rem}
+.df-btn{padding:4px 11px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;transition:all 0.12s}
+.df-btn:hover{color:var(--text);border-color:var(--muted)}
+.df-btn.active{background:var(--surface2);color:var(--text);border-color:var(--muted)}
+
+/* DARK/LIGHT TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;border:1px solid var(--border2);background:transparent;cursor:pointer;font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace;transition:all 0.12s}
+.theme-toggle:hover{background:var(--surface2);color:var(--text)}
+body.light{--bg:#F5F4F0;--surface:#FFFFFF;--surface2:#F0EEE8;--surface3:#E8E5DC;--border:#DDD9CC;--border2:#CCC8BB;--text:#1A1917;--muted:#9A9488;--muted2:#6A6458}
+
+/* ABOUT PAGE */
+.about-wrap{padding:1.5rem;max-width:680px}
+.about-hero{margin-bottom:2rem}
+.about-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;letter-spacing:-0.04em;margin-bottom:6px}
+.about-sub{font-size:12px;color:var(--muted2);font-family:'DM Mono',monospace}
+.about-modules{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2rem}
+.am{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem}
+.am-num{font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace;margin-bottom:4px}
+.am-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:4px}
+.am-desc{font-size:11px;color:var(--muted2);line-height:1.5}
+.am-status{display:inline-block;margin-top:8px;font-size:9px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);color:var(--muted2)}
+.am-status.live{border-color:var(--cyan-dim);color:var(--cyan);background:var(--cyan-glow)}
+.roadmap{margin-bottom:2rem}
+.roadmap-title{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:10px}
+.rm-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.rm-item:last-child{border-bottom:none}
+.rm-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rm-dot.done{background:var(--cyan)}
+.rm-dot.prog{background:#FFB800}
+.rm-dot.soon{background:var(--border2)}
+.rm-text{font-size:12px;color:var(--text);flex:1}
+.rm-badge{font-size:9px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);color:var(--muted2);white-space:nowrap}
+.rm-badge.done{border-color:var(--cyan-dim);color:var(--cyan)}
+.rm-badge.prog{border-color:#7A5800;color:#FFB800}
+.about-footer{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;padding-top:1rem;border-top:1px solid var(--border)}
+
+/* COUNTER ANIMATION */
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.kpi-val{animation:countUp 0.6s ease forwards}
+
+
+/* LOADING */
+#loading-screen{position:fixed;inset:0;z-index:2000;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+#loading-screen.visible{display:flex}
+.loading-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text);letter-spacing:-0.02em}
+.loading-logo span{color:var(--cyan)}
+.loading-bar-wrap{width:200px;height:2px;background:var(--border2);border-radius:2px;overflow:hidden}
+.loading-bar{height:2px;background:var(--cyan);border-radius:2px;width:0%;animation:loadprog 1.8s ease forwards}
+@keyframes loadprog{0%{width:0%}60%{width:75%}90%{width:92%}100%{width:100%}}
+.loading-sub{font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace;animation:fadeinout 1.8s ease}
+@keyframes fadeinout{0%{opacity:0}30%{opacity:1}80%{opacity:1}100%{opacity:0.5}}
+
+/* TOOLTIP sidebar */
+.mod-tab{position:relative}
+.sb-tooltip{position:fixed;background:var(--surface3);border:1px solid var(--border2);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:9999;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.4)}
+.sidebar.mini .mod-tab:hover .sb-tooltip{opacity:1}
+
+/* BREADCRUMB */
+.breadcrumb{font-size:11px;font-family:'DM Mono',monospace;color:var(--muted2);margin-left:8px;display:flex;align-items:center;gap:6px}
+.breadcrumb .bc-sep{color:var(--muted);font-size:10px}
+.breadcrumb .bc-active{color:var(--text)}
+
+/* EMPTY STATE */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:12px}
+.empty-state svg{opacity:0.25}
+.empty-state p{font-size:13px;color:var(--muted);text-align:center;line-height:1.5}
+.empty-state small{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* MATCH ACTION BTN */
+.match-action{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;transition:all 0.12s;white-space:nowrap}
+.match-action:hover{border-color:var(--cyan-dim);color:var(--cyan);background:var(--cyan-glow)}
+
+
+/* HOME */
+.home-wrap{padding:1.5rem;max-width:1060px}
+.home-greeting{margin-bottom:1.5rem}
+.home-greeting h1{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:3px}
+.home-greeting p{font-size:12px;color:var(--muted2);font-family:'DM Mono',monospace}
+.home-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.kpi-label{font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:6px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;letter-spacing:-0.03em;line-height:1}
+.kpi-change{font-size:10px;font-family:'DM Mono',monospace;margin-top:5px}
+.kpi-up{color:#00C882}.kpi-warn{color:#FFB800}.kpi-muted{color:var(--muted2)}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem}
+.home-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem}
+.home-card-title{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:1rem}
+.chart-wrap{height:90px;display:flex;align-items:flex-end;gap:5px;padding-bottom:4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar-col span{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
+.bar{width:100%;border-radius:3px 3px 0 0;background:var(--border2);transition:background 0.2s;cursor:default}
+.bar.today{background:var(--cyan)}
+.bar:hover{opacity:0.8}
+.mod-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mc2{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;cursor:pointer;transition:all 0.15s;text-align:left}
+.mc2:hover{border-color:var(--border2);background:var(--surface2)}
+.mc2.active-mod{border-color:var(--cyan-dim)}
+.mc2-icon{font-size:1.3rem;margin-bottom:8px}
+.mc2-num{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.mc2-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;font-family:'Syne',sans-serif}
+.mc2-desc{font-size:10px;color:var(--muted2);line-height:1.4}
+.mc2-status{display:inline-block;margin-top:8px;font-size:9px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);color:var(--muted2)}
+.mc2-status.live{border-color:var(--cyan-dim);color:var(--cyan);background:var(--cyan-glow)}
+.alert-list{display:flex;flex-direction:column;gap:6px}
+.alert-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border-radius:7px;font-size:12px;border:1px solid var(--border)}
+.alert-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.alert-dot.red{background:#FF5C5C}.alert-dot.amber{background:#FFB800}.alert-dot.cyan{background:var(--cyan)}
+.alert-text{flex:1;color:var(--text)}
+.alert-time{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap}
+
+/* STAR / GUARDADOS */
+.star-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;transition:transform 0.15s;line-height:1;color:var(--muted)}
+.star-btn:hover{transform:scale(1.2)}
+.star-btn.starred{color:#FFB800}
+.fake-link{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-empty{text-align:center;padding:3rem;color:var(--muted);font-size:13px}
+
+
+/* TTAG COLORES */
+.ttag-hot{background:rgba(255,60,60,0.18);color:#FF5C5C;border-color:#7A1818}
+.ttag-rise{background:rgba(255,165,0,0.15);color:#FFB020;border-color:#7A5000}
+.ttag-new{background:rgba(91,200,216,0.12);color:var(--cyan);border-color:var(--cyan-dim)}
+.ttag-pct-max{background:rgba(255,60,60,0.2);color:#FF5C5C;border-color:#7A1818}
+.ttag-pct-high{background:rgba(255,120,40,0.18);color:#FF8C30;border-color:#7A3800}
+.ttag-pct-mid{background:rgba(255,185,0,0.15);color:#FFB800;border-color:#7A5800}
+.ttag-pct-low{background:rgba(91,200,216,0.12);color:var(--cyan);border-color:var(--cyan-dim)}
+
+/* BADGE VENTAS COLOREADOS */
+.b50{background:rgba(74,96,128,0.18);color:#7A9AB0;border-color:#243050}
+.b100{background:rgba(74,96,128,0.22);color:#8AAAC0;border-color:#2A3A5A}
+.b500{background:rgba(30,144,255,0.18);color:#5AADFF;border-color:#1A4A80}
+.b1000{background:rgba(0,200,130,0.18);color:#00C882;border-color:#006040}
+.b5000{background:rgba(255,185,0,0.18);color:#FFB800;border-color:#7A5800}
+.b10000{background:rgba(255,120,40,0.2);color:#FF8C30;border-color:#7A3800}
+.b50000{background:rgba(255,60,60,0.2);color:#FF5C5C;border-color:#7A1818}
+
+/* DELETE HIST BTN */
+.hi-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px;line-height:1;transition:color 0.12s;flex-shrink:0}
+.hi-del:hover{color:var(--red,#FF5C5C)}
+
+
+col.c1{width:37%}col.c2{width:13%}col.c3{width:11%}col.c4{width:11%}col.c5{width:13%}col.c6{width:6%}col.c7{width:5%}
+
+/* HUNTER v18 */
+.hunt-view-btn{flex:1;padding:7px 12px;border-radius:6px;border:1px solid transparent;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--muted2);transition:all 0.15s;text-align:left}
+.hunt-view-btn:hover{background:var(--surface2);color:var(--text)}
+.hunt-view-btn.active{background:var(--surface2);border-color:var(--border2);color:#E07B8A}
+.hunt-loading{display:flex;align-items:center;gap:12px;padding:2rem;color:var(--muted2);font-size:13px;font-family:'DM Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.hunt-spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:#E07B8A;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.full-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:9px;font-family:'DM Mono',monospace;font-weight:600;white-space:nowrap}
+.full-yes{background:rgba(0,200,130,0.15);color:#00C882;border:1px solid rgba(0,200,130,0.35)}
+.full-no{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.rank-num{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--muted);text-align:center}
+.rank-num.gold{color:#FFB800}
+.rank-num.silver{color:#8AAAC0}
+.rank-num.bronze{color:#CD7F32}
+.link-btn{display:inline-flex;align-items:center;font-size:9px;color:var(--muted);background:none;border:1px solid var(--border2);border-radius:20px;padding:2px 7px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.12s;text-decoration:none}
+.link-btn:hover{color:var(--text);border-color:var(--muted)}
+col.m1{width:27%}col.m2{width:12%}col.m3{width:13%}col.m4{width:12%}col.m5{width:13%}col.m6{width:18%}
+</style>
+</head>
+<body>
+
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-logo">Sistema de Gestión <span>Ecommerce</span></div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-sub" id="loading-msg">Conectando con MELI API...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      
+      <div class="login-brand" style="text-align:center">Sistema de Gestión<br><span style="color:var(--cyan);font-size:0.75rem;font-weight:400">Ecommerce · MLC</span></div>
+    </div>
+    <div class="login-title">Bienvenido</div>
+    <div class="login-sub">Ingresa tus credenciales para continuar</div>
+    <div class="login-field"><label>Email</label><input type="email" placeholder="correo@empresa.cl" id="login-email"></div>
+    <div class="login-field"><label>Contraseña</label><input type="password" placeholder="••••••••"></div>
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
+    <div class="login-divider"><span>o continuar con</span></div>
+    <button class="meli-btn" onclick="doLoginMeli()">
+      <div class="meli-logo"><span>M</span></div>
+      Ingresar con Mercado Libre
+    </button>
+    <div class="login-footer">Sistema de Gestión Ecommerce · Chile</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topnav">
+    <button class="tn-hamburger" onclick="toggleSidebar()" id="hamburger"><span></span><span></span><span></span></button>
+    <div class="tn-logo">
+      
+      <div class="tn-brand">Sistema de Gestión <small>Ecommerce · MLC</small></div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb"><span>Inicio</span></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀ Claro</button>
+
+    <div class="bell-wrap" onclick="toggleBell()" id="bell-wrap">
+      <span class="bell-icon">🔔</span>
+      <span class="bell-dot" id="bell-dot"></span>
+      <div class="bell-dropdown" id="bell-dropdown">
+        <div class="bell-header">Alertas recientes</div>
+        <div class="bell-item"><span class="bell-dot2" style="background:#FF5C5C"></span><div><div class="bell-text">Stock crítico: Cargador 20W Mohits (3 unid.)</div><div class="bell-time">Hace 12 min</div></div></div>
+        <div class="bell-item"><span class="bell-dot2" style="background:#FF5C5C"></span><div><div class="bell-text">Stock bajo: Power Bank Master-G 30000mah</div><div class="bell-time">Hace 1h</div></div></div>
+        <div class="bell-item"><span class="bell-dot2" style="background:#FFB800"></span><div><div class="bell-text">Competidor bajó precio: Soporte Auto Hoco</div><div class="bell-time">Hace 2h</div></div></div>
+        <div class="bell-item"><span class="bell-dot2" style="background:var(--cyan)"></span><div><div class="bell-text">Match fuerte: cargador magsafe inalámbrico</div><div class="bell-time">Hoy</div></div></div>
+      </div>
+    </div>
+
+    <div class="avatar-wrap" id="avatar-wrap">
+      <div class="tn-user" onclick="toggleAvatar()">
+        <div class="tn-avatar" id="user-avatar">VL</div>
+        <div class="tn-name" id="user-name">Vicente Lucero</div>
+      </div>
+      <div class="avatar-dropdown" id="avatar-dropdown">
+        <div class="av-item">👤 Perfil</div>
+        <div class="av-item">⚙ Configuración</div>
+        <div class="av-item danger" onclick="doLogout()">→ Salir</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-section">Nav</div>
+      <button class="mod-tab active" onclick="switchMod('home',this)">
+        <div class="sb-tooltip">Inicio</div>
+        <span class="mt-num">00</span>
+        <div class="mt-icon">⌂</div>
+        <div class="mt-name">Inicio</div>
+        <div class="active-bar"></div>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="mod-tab" onclick="switchMod('wms',this)">
+        <div class="sb-tooltip">WMS · Inventario</div>
+        <span class="mt-num">01</span>
+        <div class="mt-icon">📦</div>
+        <div class="mt-name">WMS</div>
+        <div class="active-bar"></div>
+      </button>
+      <button class="mod-tab" onclick="switchMod('tablero',this)">
+        <div class="sb-tooltip">Tablero · Reabastecimiento</div>
+        <span class="mt-num">02</span>
+        <div class="mt-icon">📊</div>
+        <div class="mt-name">Tablero</div>
+        <div class="active-bar"></div>
+      </button>
+      <button class="mod-tab" onclick="switchMod('repricer',this)">
+        <div class="sb-tooltip">Repricer · Precios</div>
+        <span class="mt-num">03</span>
+        <div class="mt-icon">💲</div>
+        <div class="mt-name">Repricer</div>
+        <div class="active-bar"></div>
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="mod-tab" onclick="switchMod('hunter',this)">
+        <div class="sb-tooltip">Hunter IA</div>
+        <span class="mt-num">04</span>
+        <div class="mt-icon">🎯</div>
+        <div class="mt-name">Hunter IA</div>
+        <div class="active-bar"></div>
+      </button>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-divider"></div>
+      <button class="mod-tab" onclick="switchMod('about',this)">
+        <div class="sb-tooltip">Acerca de</div>
+        <div class="mt-icon">ℹ</div>
+        <div class="mt-name">Info</div>
+        <div class="active-bar"></div>
+      </button>
+      <button class="mod-tab" onclick="switchMod('config',this)" id="tab-config">
+        <div class="sb-tooltip">Configuración API</div>
+        <div class="mt-icon" id="config-icon">⚙</div>
+        <div class="mt-name">API</div>
+        <div class="active-bar"></div>
+      </button>
+    </div>
+
+    <div class="content" id="content-area">
+
+
+      <!-- HOME -->
+      <div id="mod-home" style="display:flex;flex-direction:column;overflow-y:auto">
+        <div class="home-wrap">
+          <div class="home-greeting">
+            <h1>Buenas tardes, <span id="greet-name" style="color:var(--cyan)">Vicente</span></h1>
+            <p>Sistema de Gestión Ecommerce · MLC · Semana 21, 2025</p>
+          </div>
+          <div class="home-kpis">
+            <div class="kpi">
+              <div class="kpi-label">Ventas esta semana</div>
+              <div class="kpi-val" style="color:var(--cyan)" id="kpi-sales">$1.24M</div>
+              <div class="kpi-change kpi-up">↑ 18% vs semana anterior</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Productos activos</div>
+              <div class="kpi-val" id="kpi-prods">142</div>
+              <div class="kpi-change kpi-muted">En 3 categorías MELI</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Alertas pendientes</div>
+              <div class="kpi-val" style="color:#FFB800" id="kpi-alerts">4</div>
+              <div class="kpi-change kpi-warn">2 stock · 2 precio</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Match detectados</div>
+              <div class="kpi-val" style="color:#A78BFA" id="kpi-match">8</div>
+              <div class="kpi-change kpi-up">↑ 3 nuevos hoy</div>
+            </div>
+          </div>
+          <div class="home-grid">
+            <div class="home-card" style="grid-column:1/-1">
+              <div class="home-card-title">Ventas diarias · últimos 7 días (CLP)</div>
+              <div id="chart-wrap" style="height:110px;position:relative;margin-top:8px"></div>
+            </div>
+          </div>
+          <div class="home-grid" style="margin-bottom:2rem">
+            <div class="home-card">
+              <div class="home-card-title">Top productos · semana actual</div>
+              <div id="top-prods">
+                <div class="top-prod-item">
+                  <span class="tp-rank">1</span>
+                  <div style="flex:1;min-width:0">
+                    <div class="tp-name">Cargador De Pared USB-C 35W Mohits</div>
+                    <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px">48 unidades vendidas</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="tp-val">$184.320</div>
+                    <div style="font-size:9px;color:#00C882;font-family:'DM Mono',monospace">↑ 12%</div>
+                  </div>
+                </div>
+                <div class="top-prod-item">
+                  <span class="tp-rank">2</span>
+                  <div style="flex:1;min-width:0">
+                    <div class="tp-name">Power Bank Master-G 30000mah</div>
+                    <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px">39 unidades vendidas</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="tp-val">$156.750</div>
+                    <div style="font-size:9px;color:#00C882;font-family:'DM Mono',monospace">↑ 8%</div>
+                  </div>
+                </div>
+                <div class="top-prod-item">
+                  <span class="tp-rank">3</span>
+                  <div style="flex:1;min-width:0">
+                    <div class="tp-name">Cargador Rápido Mohits 20W iPhone</div>
+                    <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px">36 unidades vendidas</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="tp-val">$142.900</div>
+                    <div style="font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace">→ 0%</div>
+                  </div>
+                </div>
+                <div class="top-prod-item">
+                  <span class="tp-rank">4</span>
+                  <div style="flex:1;min-width:0">
+                    <div class="tp-name">Soporte Auto Hoco Ca94 Polaris</div>
+                    <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px">22 unidades vendidas</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="tp-val">$98.470</div>
+                    <div style="font-size:9px;color:#FF5C7A;font-family:'DM Mono',monospace">↓ 4%</div>
+                  </div>
+                </div>
+                <div class="top-prod-item">
+                  <span class="tp-rank">5</span>
+                  <div style="flex:1;min-width:0">
+                    <div class="tp-name">Carcasa Magsafe Premium iPhone</div>
+                    <div style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px">18 unidades vendidas</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div class="tp-val">$89.950</div>
+                    <div style="font-size:9px;color:#00C882;font-family:'DM Mono',monospace">↑ 21%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="home-card">
+              <div class="home-card-title">Actividad reciente</div>
+              <table style="width:100%;border-collapse:collapse">
+                <tbody>
+                  <tr style="background:linear-gradient(90deg,rgba(0,200,130,0.08) 0%,transparent 100%);border-radius:6px">
+                    <td style="padding:7px 8px;width:36px"><span style="font-size:9px;font-family:'DM Mono',monospace;color:#00C882;font-weight:600">VTA</span></td>
+                    <td style="padding:7px 4px;font-size:11px;color:var(--text)">Venta pagada · Cargador 20W Mohits x3</td>
+                    <td style="padding:7px 4px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;white-space:nowrap">8 min</td>
+                  </tr>
+                  <tr style="background:linear-gradient(90deg,rgba(255,92,122,0.08) 0%,transparent 100%)">
+                    <td style="padding:7px 8px"><span style="font-size:9px;font-family:'DM Mono',monospace;color:#FF5C7A;font-weight:600">STK</span></td>
+                    <td style="padding:7px 4px;font-size:11px;color:var(--text)">Stock crítico · Cargador 20W Mohits · 3 unid.</td>
+                    <td style="padding:7px 4px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;white-space:nowrap">12 min</td>
+                  </tr>
+                  <tr style="background:linear-gradient(90deg,rgba(255,181,71,0.08) 0%,transparent 100%)">
+                    <td style="padding:7px 8px"><span style="font-size:9px;font-family:'DM Mono',monospace;color:#FFB800;font-weight:600">PED</span></td>
+                    <td style="padding:7px 4px;font-size:11px;color:var(--text)">Pedido pendiente · Power Bank Anker x1</td>
+                    <td style="padding:7px 4px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;white-space:nowrap">34 min</td>
+                  </tr>
+                  <tr style="background:linear-gradient(90deg,rgba(255,181,71,0.08) 0%,transparent 100%)">
+                    <td style="padding:7px 8px"><span style="font-size:9px;font-family:'DM Mono',monospace;color:#FFB800;font-weight:600">STK</span></td>
+                    <td style="padding:7px 4px;font-size:11px;color:var(--text)">Stock bajo · Power Bank Master-G · 8 unid.</td>
+                    <td style="padding:7px 4px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;white-space:nowrap">1h</td>
+                  </tr>
+                  <tr style="background:linear-gradient(90deg,rgba(91,200,216,0.08) 0%,transparent 100%)">
+                    <td style="padding:7px 8px"><span style="font-size:9px;font-family:'DM Mono',monospace;color:#5BC8D8;font-weight:600">VTA</span></td>
+                    <td style="padding:7px 4px;font-size:11px;color:var(--text)">Venta pagada · Soporte Auto Hoco x2</td>
+                    <td style="padding:7px 4px;font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right;white-space:nowrap">2h</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="home-card-title" style="margin-bottom:10px">Módulos de la plataforma</div>
+          <div class="mod-cards">
+            <div class="mc2" onclick="switchModFromHome('wms')">
+              <div class="mc2-icon" style="font-size:1.4rem">▦</div>
+              <div class="mc2-num">01</div>
+              <div class="mc2-name">WMS</div>
+              <div class="mc2-desc">Inventario y bodega física centralizada</div>
+              <div class="mc2-status">En desarrollo</div>
+            </div>
+            <div class="mc2" onclick="switchModFromHome('tablero')">
+              <div class="mc2-icon" style="font-size:1.4rem">▤</div>
+              <div class="mc2-num">02</div>
+              <div class="mc2-name">Tablero</div>
+              <div class="mc2-desc">Reabastecimiento inteligente</div>
+              <div class="mc2-status">En desarrollo</div>
+            </div>
+            <div class="mc2" onclick="switchModFromHome('repricer')">
+              <div class="mc2-icon" style="font-size:1.4rem;font-family:DM Mono,monospace;color:var(--muted2)">$</div>
+              <div class="mc2-num">03</div>
+              <div class="mc2-name">Repricer</div>
+              <div class="mc2-desc">Estrategia de precios automatizada</div>
+              <div class="mc2-status">En desarrollo</div>
+            </div>
+            <div class="mc2 active-mod" onclick="switchModFromHome('hunter')">
+              <div class="mc2-icon" style="font-size:1.4rem">◎</div>
+              <div class="mc2-num">04</div>
+              <div class="mc2-name">Hunter IA</div>
+              <div class="mc2-desc">Product research con IA</div>
+              <div class="mc2-status live">Activo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WMS -->
+      <div id="mod-wms" class="mod-overview" style="display:none">
+        <div class="mod-ov-badge">Módulo 01</div>
+        <div class="mod-ov-title">WMS e Inventario</div>
+        <div class="mod-ov-desc">Núcleo operativo de la plataforma. Centraliza el catálogo y gestiona las ubicaciones reales dentro de la bodega física, sincronizando el stock con todas tus publicaciones en Mercado Libre.</div>
+        <div class="mod-ov-cards">
+          <div class="moc"><div class="moc-label">SKU Maestro</div><div class="moc-text">Un producto físico abastece múltiples publicaciones virtuales simultáneamente.</div></div>
+          <div class="moc"><div class="moc-label">Reserva temporal</div><div class="moc-text">Ante pagos pendientes, reserva stock preventivamente para evitar sobreventas.</div></div>
+          <div class="moc"><div class="moc-label">Descuento definitivo</div><div class="moc-text">El inventario se descuenta solo al confirmar el estado "pagado" en MELI.</div></div>
+          <div class="moc"><div class="moc-label">Bodega física</div><div class="moc-text">Mapeo de ubicaciones reales. Compatible con logística Full/Flex para stock local.</div></div>
+        </div>
+        <div class="mod-ov-soon">⏳ En desarrollo</div>
+      </div>
+
+      <!-- TABLERO -->
+      <div id="mod-tablero" class="mod-overview" style="display:none">
+        <div class="mod-ov-badge">Módulo 02</div>
+        <div class="mod-ov-title">Tablero y Reabastecimiento</div>
+        <div class="mod-ov-desc">Transforma la data de ventas en decisiones logísticas accionables. Cruza el rendimiento comercial con tiempos de tránsito de proveedores para anticipar quiebres de stock.</div>
+        <div class="mod-ov-cards">
+          <div class="moc"><div class="moc-label">Alertas predictivas</div><div class="moc-text">Avisa el momento exacto para emitir una nueva orden de compra antes del quiebre.</div></div>
+          <div class="moc"><div class="moc-label">Historial de ventas</div><div class="moc-text">Cruza rendimiento histórico con tiempos de tránsito estipulados por proveedores.</div></div>
+          <div class="moc"><div class="moc-label">Aprobación manual</div><div class="moc-text">No emite órdenes automáticas. El administrador aprueba cada compra sugerida.</div></div>
+          <div class="moc"><div class="moc-label">Dashboard visual</div><div class="moc-text">Vista centralizada del estado de inventario y proyecciones de demanda.</div></div>
+        </div>
+        <div class="mod-ov-soon">⏳ En desarrollo</div>
+      </div>
+
+      <!-- REPRICER -->
+      <div id="mod-repricer" class="mod-overview" style="display:none">
+        <div class="mod-ov-badge">Módulo 03</div>
+        <div class="mod-ov-title">Repricer · Estrategia de Precios</div>
+        <div class="mod-ov-desc">Maximiza la competitividad sin sacrificar rentabilidad. Monitorea y ajusta precios automáticamente para alcanzar el "Price to Win" sugerido por la API de Mercado Libre.</div>
+        <div class="mod-ov-cards">
+          <div class="moc"><div class="moc-label">Price to Win</div><div class="moc-text">Ajuste automático hacia el precio sugerido por MELI para mayor visibilidad.</div></div>
+          <div class="moc"><div class="moc-label">Protección ROI</div><div class="moc-text">Barrera de seguridad que bloquea ajustes si el margen neto cae bajo el 25%.</div></div>
+          <div class="moc"><div class="moc-label">Bandeja de aprobación</div><div class="moc-text">Decisiones que superan el límite de rentabilidad van a aprobación manual.</div></div>
+          <div class="moc"><div class="moc-label">Solo catálogo</div><div class="moc-text">Opera exclusivamente con publicaciones de Catálogo (Buy Box) en MELI.</div></div>
+        </div>
+        <div class="mod-ov-soon">⏳ En desarrollo</div>
+      </div>
+
+      <!-- CONFIG API TOKEN -->
+      <div id="mod-config" style="display:none;overflow-y:auto;height:100%">
+        <div style="padding:1.5rem;max-width:600px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px">
+            <div class="sec-title" style="color:var(--cyan)">⚙ Configuración API</div>
+            <span id="token-status-badge" style="font-size:9px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;border:1px solid var(--border)">sin token</span>
+          </div>
+          <div class="sec-sub" style="margin-bottom:1.5rem">Pega tu Access Token de MELI para activar datos reales de ventas</div>
+
+          <!-- TOKEN INPUT -->
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem">
+            <div style="font-size:11px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;margin-bottom:.75rem">Access Token</div>
+            <textarea id="token-input" placeholder="APP_USR-..." style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;resize:none;height:80px;outline:none;line-height:1.5"></textarea>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button onclick="saveToken()" style="flex:1;padding:9px;border-radius:8px;border:none;background:var(--cyan);color:var(--bg);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer">✓ Activar token</button>
+              <button onclick="clearToken()" style="padding:9px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer">Limpiar</button>
+            </div>
+          </div>
+
+          <!-- STATUS -->
+          <div id="token-info" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem">
+            <div style="font-size:11px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;margin-bottom:.75rem">Estado de conexión</div>
+            <div id="token-info-body"></div>
+          </div>
+
+          <!-- INSTRUCCIONES -->
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem">
+            <div style="font-size:11px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;font-family:'DM Mono',monospace;margin-bottom:.75rem">¿Cómo obtener el token?</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--cyan);min-width:20px;margin-top:1px">01</span>
+                <span style="font-size:12px;color:var(--muted2);line-height:1.5">Abre esta URL en el navegador con tu Client ID:<br><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text);word-break:break-all">https://auth.mercadolibre.cl/authorization?response_type=code&client_id=TU_CLIENT_ID&redirect_uri=https://oauth.pstmn.io/v1/callback</span></span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--cyan);min-width:20px;margin-top:1px">02</span>
+                <span style="font-size:12px;color:var(--muted2);line-height:1.5">Copia el código <code style="color:var(--text)">TG-...</code> que aparece en la URL de Postman</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--cyan);min-width:20px;margin-top:1px">03</span>
+                <span style="font-size:12px;color:var(--muted2);line-height:1.5">En Postman haz POST a <code style="color:var(--text)">api.mercadolibre.com/oauth/token</code> con tus credenciales</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--cyan);min-width:20px;margin-top:1px">04</span>
+                <span style="font-size:12px;color:var(--muted2);line-height:1.5">Copia el <code style="color:var(--text)">access_token</code> y pégalo arriba · Dura 6 horas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABOUT -->
+      <div id="mod-about" style="display:none;overflow-y:auto;height:100%">
+        <div class="about-wrap">
+          <div class="about-hero">
+            <div class="about-title">Sistema de Gestión<br><span style="color:var(--cyan)">Ecommerce</span></div>
+            <div class="about-sub">Plataforma centralizada · Mercado Libre Chile · v1.0.0-beta</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin-bottom:1.5rem">
+            <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:10px">¿Qué es esta plataforma?</div>
+            <p style="font-size:13px;color:var(--muted2);line-height:1.75;margin-bottom:1rem">Una plataforma centralizada diseñada para vendedores de Mercado Libre Chile que quieren tomar decisiones basadas en datos reales — no en intuición. Integra en un solo lugar la investigación de productos con IA, gestión de inventario, estrategia de precios automatizada y análisis de tendencias del mercado.</p>
+            <p style="font-size:13px;color:var(--muted2);line-height:1.75">El sistema se conecta directamente con la API oficial de Mercado Libre, eliminando el trabajo manual de monitoreo, reabastecimiento y ajuste de precios. El objetivo: que el vendedor enfoque su tiempo en decidir qué vender y cuánto importar — no en operar la plataforma.</p>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:1.1rem">
+              <div style="text-align:center;padding:.8rem .5rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--cyan)">4</div><div style="font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px">Módulos</div></div>
+              <div style="text-align:center;padding:.8rem .5rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--cyan)">API</div><div style="font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px">MELI Oficial</div></div>
+              <div style="text-align:center;padding:.8rem .5rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--cyan)">IA</div><div style="font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px">Research</div></div>
+              <div style="text-align:center;padding:.8rem .5rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)"><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--cyan)">24/7</div><div style="font-size:9px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:2px">Monitoreo</div></div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.07em;font-family:'DM Mono',monospace;margin-bottom:10px">Los 4 módulos</div>
+          <div class="about-modules">
+            <div class="am"><div class="am-num">01 · WMS e Inventario</div><div class="am-name">Bodega centralizada</div><div class="am-desc">Un producto físico (SKU Maestro) abastece múltiples publicaciones. Reserva automática ante pagos pendientes y descuento definitivo al confirmar. Compatible con Full/Flex.</div><div class="am-status">En desarrollo</div></div>
+            <div class="am"><div class="am-num">02 · Tablero</div><div class="am-name">Reabastecimiento inteligente</div><div class="am-desc">Cruza historial de ventas con tiempos de tránsito de proveedores. Alertas predictivas que avisan exactamente cuándo emitir una nueva orden de compra.</div><div class="am-status">En desarrollo</div></div>
+            <div class="am"><div class="am-num">03 · Repricer</div><div class="am-name">Precios automatizados</div><div class="am-desc">Ajuste automático hacia el Price to Win de MELI con barrera de protección ROI mínimo del 25%. Decisiones críticas van a aprobación manual del administrador.</div><div class="am-status">En desarrollo</div></div>
+            <div class="am"><div class="am-num">04 · Hunter IA</div><div class="am-name">Product Research con IA</div><div class="am-desc">Tendencias API MELI por categoría. Análisis Hunter/Scout. Cruce de keywords con ventas reales. Detección automática de oportunidades de importación con score y margen estimado.</div><div class="am-status live">Activo</div></div>
+          </div>
+          <div class="roadmap">
+            <div class="roadmap-title">Hunter IA · 5 vistas activas</div>
+            <div class="rm-item"><span class="rm-dot done"></span><span class="rm-text"><strong>Tendencia</strong> · Keywords más buscadas y de mayor crecimiento por categoría MELI. Filtro semanal / mensual / trimestral.</span><span class="rm-badge done">Activo</span></div>
+            <div class="rm-item"><span class="rm-dot done"></span><span class="rm-text"><strong>Product Hunter</strong> · Análisis Hunter/Scout con filtros por nivel de ventas (+50 a +50.000) e historial de búsquedas.</span><span class="rm-badge done">Activo</span></div>
+            <div class="rm-item"><span class="rm-dot done"></span><span class="rm-text"><strong>Match</strong> · Cruce automático de keywords trending con productos de ventas probadas. Señales FUERTE / MEDIO / OPORTUNIDAD.</span><span class="rm-badge done">Activo</span></div>
+            <div class="rm-item"><span class="rm-dot done"></span><span class="rm-text"><strong>Oportunidades</strong> · Candidatos a importar detectados automáticamente con score termómetro y margen estimado.</span><span class="rm-badge done">Activo</span></div>
+            <div class="rm-item"><span class="rm-dot done"></span><span class="rm-text"><strong>★ Guardados</strong> · Lista personal de productos marcados para seguimiento desde Product Hunter.</span><span class="rm-badge done">Activo</span></div>
+          </div>
+          <div class="roadmap">
+            <div class="roadmap-title">Roadmap</div>
+            <div class="rm-item"><span class="rm-dot prog"></span><span class="rm-text">WMS · SKU Maestro, sync stock, reserva temporal</span><span class="rm-badge prog">En progreso</span></div>
+            <div class="rm-item"><span class="rm-dot prog"></span><span class="rm-text">Repricer · Price to Win con protección ROI automática</span><span class="rm-badge prog">En progreso</span></div>
+            <div class="rm-item"><span class="rm-dot soon"></span><span class="rm-text">Tablero · Alertas predictivas de reabastecimiento</span><span class="rm-badge">Próximamente</span></div>
+            <div class="rm-item"><span class="rm-dot soon"></span><span class="rm-text">Integración proveedores · Cotización automática China</span><span class="rm-badge">Futuro</span></div>
+            <div class="rm-item"><span class="rm-dot soon"></span><span class="rm-text">App móvil · Notificaciones push en tiempo real</span><span class="rm-badge">Futuro</span></div>
+          </div>
+          <div class="about-footer">Sistema de Gestión Ecommerce · Chile · v1.0.0-beta · Mayo 2026<br>API oficial Mercado Libre Chile · Sin scraping · Sin métodos no autorizados</div>
+        </div>
+      </div>
+
+      <!-- HUNTER IA -->
+      <div id="mod-hunter" style="display:flex;flex-direction:column;height:100%">
+        <div class="inner-nav">
+          <div class="inner-nav-pills" id="inner-pills">
+            <div class="pill-indicator" id="pill-indicator"></div>
+            <button class="inner-tab tab-tend active" onclick="goTo('tend',this)">Tendencia</button>
+            <button class="inner-tab tab-hunt" onclick="goTo('hunt',this)">Product Hunter</button>
+
+          </div>
+          <div style="flex:1"></div>
+          <button class="inner-tab tab-saved" onclick="goTo('saved',this)" style="background:var(--surface2);border-radius:8px;padding:5px 12px;border:1px solid var(--border2)">★ Guardados <span id="saved-cnt" style="font-size:9px;opacity:0.6"></span></button>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:1.25rem">
+
+          <!-- TENDENCIA v18 · API REAL -->
+          <div class="page active" id="page-tend">
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px">
+              <div class="sec-title" style="color:var(--cyan)">Tendencia</div>
+              <span style="font-size:9px;font-family:'DM Mono',monospace;color:var(--cyan);opacity:0.6;border:1px solid rgba(91,200,216,0.3);padding:2px 7px;border-radius:20px">API real · MELI Chile</span>
+            </div>
+            <div class="sec-sub" id="tend-sub">Keywords más buscadas ahora mismo · Selecciona categoría</div>
+
+            <!-- SELECTOR CATEGORÍAS -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem" id="tend-cats">
+              <button class="cbtn active" onclick="fetchTrends('MLC',this)" data-id="MLC">🇨🇱 General</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1055',this)" data-id="MLC1055">📱 Celulares</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1648',this)" data-id="MLC1648">💻 Computación</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1000',this)" data-id="MLC1000">⚡ Electrónica</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1246',this)" data-id="MLC1246">🏠 Hogar</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1276',this)" data-id="MLC1276">🏋️ Deportes</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1574',this)" data-id="MLC1574">🔧 Herramientas</button>
+              <button class="cbtn" onclick="fetchTrends('MLC1367',this)" data-id="MLC1367">👗 Ropa</button>
+            </div>
+
+            <!-- LOADING -->
+            <div class="hunt-loading" id="tend-loading" style="display:none">
+              <div class="hunt-spinner" style="border-top-color:var(--cyan)"></div>
+              <span id="tend-loading-msg">Consultando API MELI...</span>
+            </div>
+
+            <!-- CONTENIDO -->
+            <div id="tend-content" style="display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <!-- Keywords trending -->
+                <div class="tc">
+                  <div class="tc-title">🔥 Keywords trending ahora</div>
+                  <div id="tend-keywords"></div>
+                </div>
+                <!-- Top vendidos de esa categoría -->
+                <div class="tc">
+                  <div class="tc-title">📦 Top vendidos · misma categoría</div>
+                  <div id="tend-top"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- EMPTY -->
+            <div id="tend-empty" style="text-align:center;padding:3rem;color:var(--muted);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+              <div style="font-size:2rem;margin-bottom:10px;opacity:0.4">📈</div>
+              <div>Selecciona una categoría para ver las keywords trending en tiempo real</div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);margin-top:6px">Datos en vivo · API pública MELI Chile · Sin token</div>
+            </div>
+          </div>
+
+          <!-- PRODUCT HUNTER v18 -->
+          <div class="page" id="page-hunt">
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px">
+              <div class="sec-title" style="color:#E07B8A">Product Hunter</div>
+              <span style="font-size:9px;font-family:'DM Mono',monospace;color:#E07B8A;opacity:0.6;border:1px solid rgba(224,123,138,0.3);padding:2px 7px;border-radius:20px">v18 · API</span>
+            </div>
+            <div class="sec-sub" id="hunt-sub">Consulta la API de MELI Chile · Top 20 más vendidos</div>
+
+            <!-- TOGGLE VISTA -->
+            <div style="display:flex;gap:5px;margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:4px">
+              <button class="hunt-view-btn active" id="vbtn-general" onclick="setHuntView('general',this)">
+                🌐 General · Top MELI Chile
+              </button>
+              <button class="hunt-view-btn" id="vbtn-categoria" onclick="setHuntView('categoria',this)">
+                🔍 Por categoría
+              </button>
+            </div>
+
+            <!-- VISTA GENERAL -->
+            <div id="hunt-view-general">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+                <div style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">Top 20 más vendidos · Mercado Libre Chile · Todas las categorías</div>
+                <button class="hist-toggle" onclick="fetchGeneral()" id="btn-refresh-gen" style="display:flex;align-items:center;gap:6px">↻ Actualizar</button>
+              </div>
+              <div id="hunt-general-body">
+                <div class="hunt-loading" id="hunt-gen-loading" style="display:none">
+                  <div class="hunt-spinner"></div>
+                  <span>Consultando API MELI...</span>
+                </div>
+                <div class="tw" id="hunt-gen-table" style="display:none">
+                  <table>
+                    <colgroup><col style="width:5%"><col style="width:36%"><col style="width:14%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:5%"><col style="width:5%"></colgroup>
+                    <thead><tr><th>#</th><th>Producto</th><th>Vendedor</th><th>Logística</th><th>Ventas</th><th>Precio</th><th>★</th><th></th></tr></thead>
+                    <tbody id="hunt-gen-tbody"></tbody>
+                  </table>
+                </div>
+                <div id="hunt-gen-empty" style="text-align:center;padding:3rem;color:var(--muted);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+                  <div style="font-size:2rem;margin-bottom:10px;opacity:0.4">🌐</div>
+                  <div style="margin-bottom:6px">Presiona <strong style="color:var(--text)">Actualizar</strong> para cargar los top vendidos de MELI Chile</div>
+                  <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);margin-top:4px">Requiere conexión · API pública MELI</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VISTA POR CATEGORÍA -->
+            <div id="hunt-view-categoria" style="display:none">
+              <div class="search-row" style="margin-bottom:.75rem">
+                <div class="search-input-wrap">
+                  <span class="search-icon">⌕</span>
+                  <input class="search-input" id="hunt-cat-input" type="text" placeholder="ej: soportes celular, power bank, fundas iphone..." onkeydown="if(event.key==='Enter')fetchCategoria()">
+                </div>
+                <button class="search-go" onclick="fetchCategoria()" id="btn-cat-go">Buscar</button>
+                <button class="hist-toggle" id="hist-toggle" onclick="toggleHist()" style="display:flex;align-items:center;gap:6px">⏱ Historial</button>
+              </div>
+
+              <!-- HISTORIAL -->
+              <div class="hist-panel" id="hist-panel">
+                <div class="hist-title">Búsquedas anteriores</div>
+                <div id="hist-list"></div>
+              </div>
+
+              <div id="hunt-cat-loading" class="hunt-loading" style="display:none">
+                <div class="hunt-spinner"></div>
+                <span id="hunt-cat-msg">Buscando en MELI Chile...</span>
+              </div>
+
+              <div id="hunt-cat-result" style="display:none">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                  <div style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace" id="hunt-cat-sub">—</div>
+                  <div style="display:flex;gap:5px">
+                    <button class="fb active" id="hf-all" onclick="setHuntFilter('all',this)">Todos</button>
+                    <button class="fb" id="hf-full" onclick="setHuntFilter('full',this)">Solo Full</button>
+                    <button class="fb csv-btn" onclick="exportHuntCSV()">↓ CSV</button>
+                  </div>
+                </div>
+                <div class="tw">
+                  <table>
+                    <colgroup><col style="width:5%"><col style="width:36%"><col style="width:14%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:5%"><col style="width:5%"></colgroup>
+                    <thead><tr><th>#</th><th>Producto</th><th>Vendedor</th><th>Logística</th><th>Ventas</th><th>Precio</th><th>★</th><th></th></tr></thead>
+                    <tbody id="hunt-cat-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div id="hunt-cat-empty" style="text-align:center;padding:3rem;color:var(--muted);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+                <div style="font-size:2rem;margin-bottom:10px;opacity:0.4">🔍</div>
+                <div>Escribe una categoría o producto y presiona <strong style="color:var(--text)">Buscar</strong></div>
+                <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);margin-top:8px">ej: "freidora de aire" · "power bank 30000" · "soporte celular auto"</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MATCH -->
+          <!-- GUARDADOS v18 -->
+          <div class="page" id="page-saved">
+            <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px">
+              <div class="sec-title" style="color:#FFB800">★ Guardados</div>
+              <span style="font-size:9px;font-family:'DM Mono',monospace;color:#FFB800;opacity:0.7;border:1px solid rgba(255,184,0,0.3);padding:2px 7px;border-radius:20px" id="saved-count-badge">0 productos</span>
+            </div>
+            <div class="sec-sub">Productos marcados con ★ desde Product Hunter</div>
+            <div style="display:flex;gap:5px;margin-bottom:.9rem;flex-wrap:wrap;align-items:center">
+              <button class="fb active" id="sf-all" onclick="setSavedFilter('all',this)">Todos</button>
+              <button class="fb" id="sf-full" onclick="setSavedFilter('full',this)">Solo Full</button>
+              <button class="fb" id="sf-hunter" onclick="setSavedFilter('hunter',this)">Hunter +500</button>
+              <div style="flex:1"></div>
+              <button class="fb" onclick="exportSavedCSV()">↓ CSV</button>
+              <button class="fb" onclick="clearAllSaved()" style="color:#FF5C5C;border-color:rgba(255,92,92,0.3)">✕ Limpiar</button>
+            </div>
+            <div class="tw" id="saved-table-wrap">
+              <table>
+                <colgroup><col style="width:36%"><col style="width:14%"><col style="width:10%"><col style="width:11%"><col style="width:12%"><col style="width:12%"><col style="width:5%"></colgroup>
+                <thead><tr><th>Producto</th><th>Vendedor</th><th>Logística</th><th>Ventas</th><th>Precio</th><th>Guardado</th><th>★</th></tr></thead>
+                <tbody id="saved-body"></tbody>
+              </table>
+            </div>
+            <div id="saved-empty-msg" style="display:none;text-align:center;padding:3rem;color:var(--muted);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+              <div style="font-size:2rem;margin-bottom:10px;opacity:0.4">★</div>
+              <div>Aún no tienes productos guardados</div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;margin-top:6px">Marca con ★ en Product Hunter para guardarlos aquí</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── AUTH ──────────────────────────────────────────
+function doLogin(){
+  const email=document.getElementById('login-email').value||'usuario@empresa.cl';
+  const parts=email.split('@')[0].split(/[._]/);
+  const initials=(parts[0][0]+(parts[1]?parts[1][0]:parts[0][1]||'X')).toUpperCase();
+  const name=parts.map(p=>p.charAt(0).toUpperCase()+p.slice(1)).join(' ');
+  launchApp(initials,name);
+}
+function doLoginMeli(){launchApp('VL','Vicente Lucero');}
+function launchApp(initials,name){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('user-avatar').textContent=initials;
+  document.getElementById('user-name').textContent=name;
+  showLoading(function(){
+    document.getElementById('app').style.display='flex';
+    init();
+  });
+}
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-email').value='';
+}
+
+// ─── SIDEBAR TOGGLE ────────────────────────────────
+let sidebarOpen=true;
+function toggleSidebar(){
+  var sb = document.getElementById('sidebar');
+  sb.classList.toggle('hidden-sb');
+  document.querySelector('.app-body').classList.toggle('sidebar-hidden');
+}
+
+// ─── MÓDULOS ──────────────────────────────────────
+function switchMod(mod,btn){
+  curModName = modNames[mod] || mod;
+  curPageName = mod === 'hunter' ? 'Tendencia' : null;
+  updateBreadcrumb();
+  // collapse all, expand active
+  // init pill indicator position
+  setTimeout(function(){
+    var pills = document.getElementById('inner-pills');
+    var indicator = document.getElementById('pill-indicator');
+    var activeTab = pills ? pills.querySelector('.inner-tab.active') : null;
+    if (pills && indicator && activeTab) {
+      var pr = pills.getBoundingClientRect();
+      var br = activeTab.getBoundingClientRect();
+      indicator.style.left = (br.left - pr.left) + 'px';
+      indicator.style.width = br.width + 'px';
+    }
+  }, 100);
+  document.querySelectorAll('.mod-tab').forEach(function(t){
+    t.classList.add('collapsed');
+    t.classList.remove('active');
+  });
+  btn.classList.remove('collapsed');
+  btn.classList.add('active');
+
+  ['home','wms','tablero','repricer','hunter','about','config'].forEach(m=>{
+    const el=document.getElementById('mod-'+m);
+    if(el) el.style.display='none';
+  });
+  const el=document.getElementById('mod-'+mod);
+  if(el) el.style.display=(mod==='hunter'||mod==='home')?'flex':(mod==='config'||mod==='about'||mod==='wms'||mod==='tablero'||mod==='repricer')?'block':'block';
+}
+
+// ─── INNER NAV ────────────────────────────────────
+function goTo(page,btn){
+  curPageName = pageNames[page] || page;
+  updateBreadcrumb();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.inner-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(btn) btn.classList.add('active');
+
+  if(page==='saved') renderSaved();
+  if(page==='hunt') renderHunt();
+}
+
+// ─── TOKEN MELI ───────────────────────────────────
+var meliToken = null;
+
+function loadToken() {
+  try {
+    var t = localStorage.getItem('swophia_token');
+    if (t) { meliToken = t; updateTokenUI(true); }
+  } catch(e) {}
+}
+
+function saveToken() {
+  var val = document.getElementById('token-input').value.trim();
+  if (!val || !val.startsWith('APP_USR-')) {
+    alert('El token debe empezar con APP_USR-');
+    return;
+  }
+  meliToken = val;
+  try { localStorage.setItem('swophia_token', val); } catch(e) {}
+  updateTokenUI(true);
+  // Verificar token con la API
+  testToken();
+}
+
+function clearToken() {
+  meliToken = null;
+  try { localStorage.removeItem('swophia_token'); } catch(e) {}
+  document.getElementById('token-input').value = '';
+  updateTokenUI(false);
+}
+
+function updateTokenUI(hasToken) {
+  var badge = document.getElementById('token-status-badge');
+  var icon  = document.getElementById('config-icon');
+  if (hasToken) {
+    badge.textContent = '✓ token activo';
+    badge.style.background = 'rgba(0,200,130,0.15)';
+    badge.style.color = '#00C882';
+    badge.style.borderColor = 'rgba(0,200,130,0.3)';
+    if (icon) icon.textContent = '✓';
+  } else {
+    badge.textContent = 'sin token';
+    badge.style.background = '';
+    badge.style.color = '';
+    badge.style.borderColor = '';
+    if (icon) icon.textContent = '⚙';
+    document.getElementById('token-info').style.display = 'none';
+  }
+}
+
+function testToken() {
+  if (!meliToken) return;
+  // Verificar con búsqueda simple en vez de /users/me (evita CORS)
+  fetch('https://api.mercadolibre.com/sites/MLC/search?q=test&limit=1', {
+    headers: { 'Authorization': 'Bearer ' + meliToken }
+  }).then(function(r){ return r.json(); })
+  .then(function(data) {
+    var infoEl = document.getElementById('token-info');
+    var bodyEl = document.getElementById('token-info-body');
+    infoEl.style.display = 'block';
+    if (data.results !== undefined) {
+      bodyEl.innerHTML =
+        '<div style="display:flex;flex-direction:column;gap:6px">' +
+        '<div style="padding:6px 10px;background:rgba(0,200,130,0.1);border-radius:6px;font-size:11px;color:#00C882;font-family:\'DM Mono\',monospace">✓ Token válido · sold_quantity activo en Product Hunter y Tendencia</div>' +
+        '</div>';
+    } else {
+      bodyEl.innerHTML = '<div style="font-size:11px;color:#FF5C5C;font-family:\'DM Mono\',monospace">Token inválido o expirado · genera uno nuevo en Postman</div>';
+      meliToken = null;
+      updateTokenUI(false);
+    }
+  }).catch(function(err){
+    // Si falla igual guardamos el token — puede funcionar para búsquedas
+    var infoEl = document.getElementById('token-info');
+    var bodyEl = document.getElementById('token-info-body');
+    infoEl.style.display = 'block';
+    bodyEl.innerHTML = '<div style="font-size:11px;color:#FFB800;font-family:\'DM Mono\',monospace">Token guardado · ve a Product Hunter y prueba una búsqueda</div>';
+  });
+}
+
+function meliHeaders() {
+  var h = { 'Content-Type': 'application/json' };
+  if (meliToken) h['Authorization'] = 'Bearer ' + meliToken;
+  return h;
+}
+
+
+var tendCatActiva = null;
+
+function fetchTrends(catId, btn) {
+  tendCatActiva = catId;
+  document.querySelectorAll('#tend-cats .cbtn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+
+  var loading = document.getElementById('tend-loading');
+  var content = document.getElementById('tend-content');
+  var empty   = document.getElementById('tend-empty');
+  var sub     = document.getElementById('tend-sub');
+  var msg     = document.getElementById('tend-loading-msg');
+
+  loading.style.display = 'flex';
+  content.style.display = 'none';
+  empty.style.display   = 'none';
+  msg.textContent = 'Consultando keywords trending...';
+
+  var trendsUrl = catId === 'MLC'
+    ? 'https://api.mercadolibre.com/trends/MLC'
+    : 'https://api.mercadolibre.com/trends/MLC/' + catId;
+
+  var topUrl = catId === 'MLC'
+    ? 'https://api.mercadolibre.com/sites/MLC/search?sort=sold_quantity_desc&limit=10'
+    : 'https://api.mercadolibre.com/sites/MLC/search?category=' + catId + '&sort=sold_quantity_desc&limit=10';
+
+  Promise.all([
+    fetch(trendsUrl, { headers: meliHeaders() }).then(function(r){ return r.json(); }),
+    fetch(topUrl, { headers: meliHeaders() }).then(function(r){ return r.json(); })
+  ]).then(function(results) {
+    var trends  = results[0];
+    var topData = results[1];
+    var keywords = Array.isArray(trends) ? trends : (trends.keywords || []);
+    var top = topData.results || [];
+
+    sub.textContent = 'Actualizado ahora · ' + btn.textContent.trim() + ' · ' + keywords.length + ' keywords · top ' + top.length + ' vendidos';
+
+    // Render keywords
+    var kwEl = document.getElementById('tend-keywords');
+    if (!keywords.length) {
+      kwEl.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:12px">Sin datos para esta categoría</div>';
+    } else {
+      kwEl.innerHTML = keywords.slice(0, 10).map(function(kw, i) {
+        var word = typeof kw === 'string' ? kw : (kw.keyword || kw.query || JSON.stringify(kw));
+        var pct = Math.round(100 - i * 8);
+        var tagCls = i < 3 ? 'ttag-pct-max' : i < 5 ? 'ttag-pct-high' : i < 7 ? 'ttag-pct-mid' : 'ttag-pct-low';
+        return '<div class="ti">' +
+          '<span class="ti-rank">' + (i+1) + '</span>' +
+          '<span class="ti-kw">' + word + '</span>' +
+          '<div class="ti-bar"><div class="ti-fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="ttag ' + tagCls + '">' + (i === 0 ? '🔥 top' : '#' + (i+1)) + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    // Render top vendidos
+    var topEl = document.getElementById('tend-top');
+    if (!top.length) {
+      topEl.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:12px">Sin datos</div>';
+    } else {
+      topEl.innerHTML = top.map(function(item, i) {
+        var isFull = item.shipping && item.shipping.logistic_type === 'fulfillment';
+        var price  = item.price ? '$' + Math.round(item.price).toLocaleString('es-CL') : '—';
+        return '<div class="ti">' +
+          '<span class="ti-rank">' + (i+1) + '</span>' +
+          '<span class="ti-kw" style="font-size:11px">' + (item.title || '—').substring(0, 38) + (item.title && item.title.length > 38 ? '…' : '') + '</span>' +
+          (isFull ? '<span class="ttag" style="background:rgba(0,200,130,0.15);color:#00C882;border-color:rgba(0,200,130,0.3)">Full</span>' : '') +
+          '<span class="ttag">' + price + '</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    loading.style.display = 'none';
+    content.style.display = 'block';
+  }).catch(function(err) {
+    loading.style.display = 'none';
+    empty.style.display   = 'block';
+    empty.innerHTML = '<div style="font-size:2rem;margin-bottom:10px;opacity:0.4">⚠</div><div style="color:var(--muted2)">Error al conectar con la API</div><div style="font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);margin-top:6px">' + err.message + '</div>';
+  });
+}
+
+
+
+// ─── DATOS PRODUCTOS ──────────────────────────────
+const P=[
+  {nombre:"Bolso Sumergible Para Celular Waterproof Kbod Splash Bag 2l",vendedor:"-",ventas:100,precio:12524,cat:"Accesorio"},
+  {nombre:"Cargador y Cable Para iPhone Lightning Color Blanco",vendedor:"-",ventas:10000,precio:19990,cat:"Cargador"},
+  {nombre:"Soporte Para Teléfono Plegable Universal Para Escritorio",vendedor:"-",ventas:1000,precio:2990,cat:"Accesorio"},
+  {nombre:"Soporte Base Porta Celular Universal Escritorio",vendedor:"-",ventas:100,precio:5942,cat:"Accesorio"},
+  {nombre:"Correa Sport Anti Perdida Magnetico Para AirPods",vendedor:"-",ventas:1000,precio:2799,cat:"Accesorio"},
+  {nombre:"Soporte Celular Ajustable Kit Arnes De Pecho Correa Selfie",vendedor:"-",ventas:1000,precio:4990,cat:"Accesorio"},
+  {nombre:"Cargador De Pared USB-C 35W Mohits Rápida Carga Cable 1m",vendedor:"-",ventas:10000,precio:3190,cat:"Cargador"},
+  {nombre:"Soporte Para Auto Hoco Ca94 Polaris Para Rejilla Negro",vendedor:"-",ventas:5000,precio:4459,cat:"Accesorio"},
+  {nombre:"Colgante Para Carcasa Celular Universal Correa",vendedor:"Banana Tienda",ventas:50,precio:7990,cat:"Accesorio"},
+  {nombre:"Funda Carcasa Premium Computech Para iPhone 17 Pro Max",vendedor:"Computech",ventas:100,precio:6703,cat:"Accesorio"},
+  {nombre:"Bateria Externa Linkon Power Bank 20000mah Black",vendedor:"Linkon",ventas:1000,precio:16990,cat:"Cargador"},
+  {nombre:"Colgante Para Celular Universal Animal Print",vendedor:"-",ventas:100,precio:7990,cat:"Accesorio"},
+  {nombre:"Tarjeta de Memoria Maxell Micro Sd 64gb Clase 10",vendedor:"Maxell",ventas:10000,precio:12990,cat:"Accesorio"},
+  {nombre:"Carcasa Antigolpes Elite + Lamina Super Curve Para Iphone",vendedor:"-",ventas:1000,precio:8540,cat:"Accesorio"},
+  {nombre:"Base Magnética Con Ventosa 360° Para Coche",vendedor:"-",ventas:100,precio:9829,cat:"Accesorio"},
+  {nombre:"Soporte Universal Celular Auto Porta Teléfono Brazo 360°",vendedor:"-",ventas:1000,precio:5980,cat:"Accesorio"},
+  {nombre:"Colgante Para Carcasa Celular Universal Diseño Correa X 2",vendedor:"Montreal",ventas:1000,precio:7990,cat:"Accesorio"},
+  {nombre:"Pack X2 Fundas Porta Celular Impermeable Anti Agua",vendedor:"-",ventas:1000,precio:4351,cat:"Accesorio"},
+  {nombre:"Funda Carcasa Premium Computech Para iPhone 17",vendedor:"Computech",ventas:100,precio:8091,cat:"Accesorio"},
+  {nombre:"Cargador Rápido Mohits 20W USB-C iPhone 11 12 13 14",vendedor:"-",ventas:10000,precio:11895,cat:"Cargador"},
+  {nombre:"Soporte Celular Metálico Moto Bici Giro 360° IT TECH",vendedor:"-",ventas:1000,precio:2753,cat:"Accesorio"},
+  {nombre:"Colgante Ajustable Carcasa Celular Universal Correa 120cm",vendedor:"-",ventas:100,precio:7990,cat:"Accesorio"},
+  {nombre:"Soporte Celular Ajustable Arnes Pecho",vendedor:"-",ventas:500,precio:4990,cat:"Accesorio"},
+  {nombre:"Cable Veggieg Carga Rápida Usb-c A Lightning iPhone",vendedor:"VegGieg",ventas:50,precio:4990,cat:"Cargador"},
+  {nombre:"Cable Rápido Apple Iphone Lightning A Tipo C",vendedor:"-",ventas:1000,precio:19990,cat:"Cargador"},
+  {nombre:"Carcasa Magsafe Premium Para iPhone Con Protector De Cámara",vendedor:"-",ventas:5000,precio:14990,cat:"Accesorio"},
+  {nombre:"Cargador Diegmark 120W Carga Rápida Cable Tipo C",vendedor:"diegmark",ventas:5000,precio:10791,cat:"Cargador"},
+  {nombre:"Soporte Celular Magnético Para Auto Magsafe Joyroom",vendedor:"-",ventas:500,precio:12697,cat:"Accesorio"},
+  {nombre:"Cordón Correa Silicona Magnética Antipérdida Airpods",vendedor:"-",ventas:100,precio:2990,cat:"Accesorio"},
+  {nombre:"Soporte De Teléfono Magnético Ventosa Celular 360",vendedor:"-",ventas:100,precio:8492,cat:"Accesorio"},
+  {nombre:"Carcasa Esr iPhone 17 Pro Max Classic Hybrid Stash Stand",vendedor:"Banana Tienda",ventas:100,precio:27990,cat:"Accesorio"},
+  {nombre:"Cargador Portátil Anker Zolo 20000mAh 22.5W USB-C Negro",vendedor:"Anker",ventas:500,precio:31990,cat:"Cargador"},
+  {nombre:"Colgante Para Carcasa Celular Universal Unicolor Cordón",vendedor:"-",ventas:100,precio:4990,cat:"Accesorio"},
+  {nombre:"Soporte Base Porta Celular iPad Tablet Escritorio",vendedor:"Linkon",ventas:1000,precio:14990,cat:"Accesorio"},
+  {nombre:"Funda Carcasa Reforzada Cellbox Samsung S26 Ultra",vendedor:"Cellbox",ventas:100,precio:9990,cat:"Accesorio"},
+  {nombre:"Soporte De Auto Carga Inalambrica Para iPhone",vendedor:"-",ventas:1000,precio:14350,cat:"Accesorio"},
+  {nombre:"Correa Cordón Antirrobo Celular Retráctil Colgante",vendedor:"-",ventas:50,precio:9290,cat:"Accesorio"},
+  {nombre:"Soporte Celular Escritorio Porta Celular Con Brazo",vendedor:"-",ventas:500,precio:6990,cat:"Accesorio"},
+  {nombre:"Carcasa Silicone MagSafe iPhone 17 Pro Max Medianoche Apple",vendedor:"Apple",ventas:100,precio:49019,cat:"Accesorio"},
+  {nombre:"Cargador Portátil Power Bank Anker Nano 5000mah 22.5w",vendedor:"Anker",ventas:1000,precio:26990,cat:"Cargador"},
+  {nombre:"Soporte Porta Celular Ajustable Correa Pecho Deportes",vendedor:"SHOP EHOMEBAG",ventas:100,precio:3990,cat:"Accesorio"},
+  {nombre:"Soporte Adhesivo Universal Para Carcasa Colgante",vendedor:"Montreal",ventas:500,precio:3990,cat:"Accesorio"},
+  {nombre:"Kit Palo Selfie Bluetooth Monopod + Tripode 170cm",vendedor:"-",ventas:500,precio:7590,cat:"Accesorio"},
+  {nombre:"Carcasa Silicón MagSafe iPhone 17 Pro Medianoche Apple",vendedor:"Apple",ventas:100,precio:49019,cat:"Accesorio"},
+  {nombre:"Power Bank VENTIMAKU 30000 mAh Carga Rápida USB-C",vendedor:"VentiMaku",ventas:1000,precio:24990,cat:"Cargador"},
+  {nombre:"Strap Colgante Para Celular Universal Cordón Mano",vendedor:"-",ventas:100,precio:1990,cat:"Accesorio"},
+  {nombre:"Carcasa Reforzada Antigolpe Transparente iPhone 15/14/13",vendedor:"Cellbox",ventas:500,precio:6640,cat:"Accesorio"},
+  {nombre:"Cargador Power Bank Master-g 30000mah 22.5w Azul",vendedor:"Master G",ventas:10000,precio:30450,cat:"Cargador"},
+  {nombre:"Strap Colgante Con Diamantes Para Telefono Universal",vendedor:"Tecnopalace",ventas:50,precio:6990,cat:"Accesorio"},
+  {nombre:"Selfies Stick Con Trípode Bluetooth Control Remoto Led",vendedor:"-",ventas:500,precio:13625,cat:"Accesorio"},
+  {nombre:"Batería Externa Power Bank 20000 Mah 22.5w Master-G",vendedor:"Dust2",ventas:50000,precio:23490,cat:"Cargador"},
+  {nombre:"Colgante Para Carcasa Celular Universal, Correa Ajustable",vendedor:"Montreal",ventas:1000,precio:7990,cat:"Accesorio"},
+  {nombre:"Brazalete Para Celular Xxl Hasta 7 Pulgadas Deportivo",vendedor:"-",ventas:500,precio:9990,cat:"Accesorio"},
+];
+
+// ─── ESTADO ───────────────────────────────────────
+let curMode='hunter',curVentas='all';
+
+function init(){
+  buildFilters(); renderHunt();
+  buildChart();
+  loadSaved();
+  loadToken();
+  // collapse all sidebar tabs except active
+  // init pill indicator position
+  setTimeout(function(){
+    var pills = document.getElementById('inner-pills');
+    var indicator = document.getElementById('pill-indicator');
+    var activeTab = pills ? pills.querySelector('.inner-tab.active') : null;
+    if (pills && indicator && activeTab) {
+      var pr = pills.getBoundingClientRect();
+      var br = activeTab.getBoundingClientRect();
+      indicator.style.left = (br.left - pr.left) + 'px';
+      indicator.style.width = br.width + 'px';
+    }
+  }, 100);
+  document.querySelectorAll('.mod-tab').forEach(function(t){
+    if (!t.classList.contains('active')) t.classList.add('collapsed');
+  });
+  const greet=document.getElementById('greet-name');if(greet)greet.textContent=document.getElementById('user-name').textContent.split(' ')[0];
+}
+
+function isHunter(p){return p.ventas>=500}
+function isScout(p){return p.ventas>=50&&p.ventas<500}
+function setMode(mode,btn){
+  curMode=mode; curVentas='all';
+  document.querySelectorAll('.mode-pill').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); buildFilters(); renderHunt();
+}
+function getFiltered(){
+  let base=P.filter(p=>curMode==='hunter'?isHunter(p):isScout(p));
+  if(curVentas==='all') return base;
+  const r={50:{min:50,max:99},100:{min:100,max:499},500:{min:500,max:999},1000:{min:1000,max:4999},5000:{min:5000,max:9999},10000:{min:10000,max:49999},50000:{min:50000,max:Infinity}}[curVentas];
+  return r?base.filter(p=>p.ventas>=r.min&&p.ventas<=r.max):base;
+}
+function buildFilters(){
+  const f=document.getElementById('filters'); f.innerHTML='';
+  const base=P.filter(p=>curMode==='hunter'?isHunter(p):isScout(p));
+  const nivs=curMode==='hunter'
+    ?[{k:'all',l:'Todos'},{k:'500',l:'+500',min:500,max:999},{k:'1000',l:'+1.000',min:1000,max:4999},{k:'5000',l:'+5.000',min:5000,max:9999},{k:'10000',l:'+10.000',min:10000,max:49999},{k:'50000',l:'+50.000',min:50000,max:Infinity}]
+    :[{k:'all',l:'Todos'},{k:'50',l:'+50',min:50,max:99},{k:'100',l:'+100',min:100,max:499}];
+  nivs.forEach(n=>{
+    const c=n.k==='all'?base.length:base.filter(p=>p.ventas>=(n.min||0)&&p.ventas<=(n.max||Infinity)).length;
+    const btn=document.createElement('button');
+    btn.className='fb'+(curVentas===n.k?' active':'');
+    btn.textContent=n.l+' ('+c+')'; btn.onclick=()=>{curVentas=n.k;buildFilters();renderHunt();}; f.appendChild(btn);
+  });
+  const csv=document.createElement('button');
+  csv.className='fb csv-btn'; csv.textContent='↓ CSV'; csv.onclick=exportCSV; f.appendChild(csv);
+}
+function bi(v){
+  if(v>=50000)return'<span class="badge b50000">+50.000</span>';
+  if(v>=10000)return'<span class="badge b10000">+10.000</span>';
+  if(v>=5000) return'<span class="badge b5000">+5.000</span>';
+  if(v>=1000) return'<span class="badge b1000">+1.000</span>';
+  if(v>=500)  return'<span class="badge b500">+500</span>';
+  if(v>=100)  return'<span class="badge b100">+100</span>';
+  return'<span class="badge b50">+50</span>';
+}
+function fmt(p){return'$'+p.toLocaleString('es-CL')}
+var savedSet = {};
+function renderHunt() {
+  var f = getFiltered();
+  var tb = document.getElementById('hunt-body');
+  if (!f.length) {
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="white" stroke-width="1.5"/><path d="M16 24h16M24 16v16" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg><p>Sin productos para este filtro</p><small>Prueba cambiando el nivel de ventas o el modo</small></div></td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < f.length; i++) {
+    var p = f[i];
+    var idx = P.indexOf(p);
+    var starred = savedSet[idx] ? 'starred' : '';
+    html += '<tr>';
+    html += '<td><div class="pname">' + p.nombre + '</div><span class="fake-link">mercadolibre.cl/p/MLC' + String(10000000 + idx * 7331).slice(0,9) + '</span></td>';
+    html += '<td><span class="vend">' + (p.vendedor === '-' ? '—' : p.vendedor) + '</span></td>';
+    html += '<td><span class="cat-pill">' + p.cat + '</span></td>';
+    html += '<td>' + bi(p.ventas) + '</td>';
+    html += '<td class="price">' + fmt(p.precio) + '</td>';
+    html += '<td><button class="star-btn ' + starred + '" data-pidx="' + idx + '" onclick="toggleStar(' + idx + ',this)">★</button></td>';
+    html += '</tr>';
+  }
+  tb.innerHTML = html;
+}
+
+
+
+
+
+function exportCSV(){
+  const f=getFiltered();
+  const rows=[['Producto','Vendedor','Categoría','Ventas','Precio','Modo','Link']];
+  f.forEach(p=>rows.push([p.nombre,p.vendedor,p.cat,bi(p.ventas),fmt(p.precio),isHunter(p)?'HUNTER':'SCOUT',p.link]));
+  const csv=rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='hunter-ia.csv';a.click();
+}
+
+
+
+// ─── HOME ─────────────────────────────────────────
+function switchModFromHome(mod) {
+  const btn = Array.from(document.querySelectorAll('.mod-tab')).find(b =>
+    b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+mod+"'")
+  );
+  if (btn) switchMod(mod, btn);
+}
+
+function buildChart() {
+  var wrap = document.getElementById('chart-wrap');
+  if (!wrap) return;
+  var data = [
+    {d:'Lun', v:142000}, {d:'Mar', v:98000}, {d:'Mié', v:187000},
+    {d:'Jue', v:224000}, {d:'Vie', v:176000}, {d:'Sáb', v:134000}, {d:'Dom', v:278000}
+  ];
+  var W = wrap.offsetWidth || 500;
+  var H = 90;
+  var pad = {t:8, r:8, b:24, l:52};
+  var max = Math.max.apply(null, data.map(function(d){return d.v;}));
+  var xs = data.map(function(d,i){ return pad.l + i * (W - pad.l - pad.r) / (data.length - 1); });
+  var ys = data.map(function(d){ return pad.t + (1 - d.v/max) * (H - pad.t - pad.b); });
+  
+  // area path
+  var area = 'M' + xs[0] + ',' + (H-pad.b);
+  xs.forEach(function(x,i){ area += ' L' + x + ',' + ys[i]; });
+  area += ' L' + xs[xs.length-1] + ',' + (H-pad.b) + ' Z';
+  
+  // line path
+  var line = 'M' + xs[0] + ',' + ys[0];
+  xs.forEach(function(x,i){ if(i>0) line += ' L' + x + ',' + ys[i]; });
+
+  // y axis labels
+  var yLabels = '';
+  [0, 0.5, 1].forEach(function(t){
+    var val = Math.round(max * (1-t) / 1000);
+    var y = pad.t + t * (H - pad.t - pad.b);
+    yLabels += '<text x="'+(pad.l-6)+'" y="'+(y+3)+'" text-anchor="end" fill="#4A6080" font-size="8" font-family="DM Mono,monospace">$'+val+'k</text>';
+    yLabels += '<line x1="'+pad.l+'" y1="'+y+'" x2="'+(W-pad.r)+'" y2="'+y+'" stroke="#1A2540" stroke-width="1"/>';
+  });
+
+  // x labels + dots
+  var xLabels = '';
+  xs.forEach(function(x,i){
+    var isLast = i === data.length-1;
+    xLabels += '<text x="'+x+'" y="'+(H-6)+'" text-anchor="middle" fill="'+(isLast?'#5BC8D8':'#4A6080')+'" font-size="8" font-family="DM Mono,monospace">'+data[i].d+'</text>';
+    xLabels += '<circle cx="'+x+'" cy="'+ys[i]+'" r="'+(isLast?3:2)+'" fill="'+(isLast?'#5BC8D8':'#3A8090')+'"/>';
+  });
+
+  wrap.innerHTML = '<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
+    + '<defs><linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5BC8D8" stop-opacity="0.2"/><stop offset="100%" stop-color="#5BC8D8" stop-opacity="0"/></linearGradient></defs>'
+    + yLabels
+    + '<path d="'+area+'" fill="url(#chartGrad)"/>'
+    + '<path d="'+line+'" fill="none" stroke="#5BC8D8" stroke-width="1.5" stroke-linejoin="round"/>'
+    + xLabels
+    + '</svg>';
+}
+
+// ─── GUARDADOS ────────────────────────────────────
+
+
+
+// ─── BELL ─────────────────────────────────────────
+function toggleBell() {
+  var dd = document.getElementById('bell-dropdown');
+  var av = document.getElementById('avatar-dropdown');
+  if (av) av.classList.remove('open');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    document.getElementById('bell-dot').style.display = 'none';
+  }
+}
+
+// ─── AVATAR DROPDOWN ──────────────────────────────
+function toggleAvatar() {
+  var dd = document.getElementById('avatar-dropdown');
+  var bell = document.getElementById('bell-dropdown');
+  if (bell) bell.classList.remove('open');
+  dd.classList.toggle('open');
+}
+
+// close dropdowns on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#bell-wrap')) {
+    var bd = document.getElementById('bell-dropdown');
+    if (bd) bd.classList.remove('open');
+  }
+  if (!e.target.closest('#avatar-wrap')) {
+    var ad = document.getElementById('avatar-dropdown');
+    if (ad) ad.classList.remove('open');
+  }
+});
+
+// ─── THEME TOGGLE ─────────────────────────────────
+var isDark = true;
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('theme-btn').textContent = isDark ? '☀ Claro' : '☾ Oscuro';
+}
+
+// ─── KPI COUNTER ANIMATION ────────────────────────
+function animateCounters() {
+  var kpis = [
+    {id:'kpi-sales', end:1240000, prefix:'$', suffix:'', format:true},
+    {id:'kpi-prods', end:142, prefix:'', suffix:'', format:false},
+    {id:'kpi-alerts', end:4, prefix:'', suffix:'', format:false},
+    {id:'kpi-match', end:8, prefix:'', suffix:'', format:false},
+  ];
+  kpis.forEach(function(k) {
+    var el = document.getElementById(k.id);
+    if (!el) return;
+    var start = 0; var duration = 800;
+    var step = k.end / (duration / 16);
+    var current = 0;
+    var iv = setInterval(function() {
+      current = Math.min(current + step, k.end);
+      if (k.format) {
+        el.textContent = k.prefix + '$' + (current/1000000).toFixed(2) + 'M';
+      } else {
+        el.textContent = k.prefix + Math.round(current) + k.suffix;
+      }
+      if (current >= k.end) clearInterval(iv);
+    }, 16);
+  });
+}
+
+
+// ─── SIDEBAR TOGGLE ────────────────────────────────
+
+// ─── TOOLTIPS ─────────────────────────────────────
+document.querySelectorAll('.mod-tab').forEach(function(tab) {
+  var tip = tab.querySelector('.sb-tooltip');
+  if (!tip) return;
+  tab.addEventListener('mouseenter', function() {
+    var rect = tab.getBoundingClientRect();
+    tip.style.top = (rect.top + rect.height/2 - 14) + 'px';
+    tip.style.left = (rect.right + 10) + 'px';
+  });
+});
+
+// ─── LOADING ──────────────────────────────────────
+var loadMsgs = ['Conectando con MELI API...','Cargando tendencias...','Sincronizando productos...','Listo'];
+function showLoading(cb) {
+  var ls = document.getElementById('loading-screen');
+  ls.classList.add('visible');
+  var i = 0;
+  var iv = setInterval(function(){
+    i++;
+    if (i < loadMsgs.length) document.getElementById('loading-msg').textContent = loadMsgs[i];
+  }, 500);
+  setTimeout(function(){
+    clearInterval(iv);
+    ls.classList.remove('visible');
+    if (cb) cb();
+  }, 2000);
+}
+
+// ─── BREADCRUMB ───────────────────────────────────
+var modNames = {home:'Inicio',wms:'WMS',tablero:'Tablero',repricer:'Repricer',hunter:'Hunter IA',about:'Acerca de'};
+var pageNames = {tend:'Tendencia',hunt:'Product Hunter',match:'Match',opp:'Oportunidades',saved:'Guardados'};
+var curModName = 'Inicio', curPageName = null;
+
+function updateBreadcrumb() {
+  var bc = document.getElementById('breadcrumb');
+  if (!bc) return;
+  var html = '<span>' + curModName + '</span>';
+  if (curPageName) html += '<span class="bc-sep">›</span><span class="bc-active">' + curPageName + '</span>';
+  bc.innerHTML = html;
+}
+
+
+// ─── STAR / SAVED ─────────────────────────────────
+
+function toggleStar(idx, btn) {
+  if (savedSet[idx]) {
+    delete savedSet[idx];
+    btn.classList.remove('starred');
+  } else {
+    savedSet[idx] = true;
+    btn.classList.add('starred');
+    btn.style.transform = 'scale(1.4)';
+    setTimeout(function(){ btn.style.transform = ''; }, 200);
+  }
+  var n = Object.keys(savedSet).length;
+  var cnt = document.getElementById('saved-cnt');
+  if (cnt) cnt.textContent = n > 0 ? '('+n+')' : '';
+  renderSaved();
+}
+
+function renderSaved() {
+  var tb = document.getElementById('saved-body');
+  if (!tb) return;
+  var keys = Object.keys(savedSet);
+  if (!keys.length) {
+    tb.innerHTML = '<tr><td colspan="6" class="saved-empty-msg">Aún no tienes productos guardados · Marca con ★ en Product Hunter</td></tr>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < keys.length; i++) {
+    var idx = parseInt(keys[i]);
+    var p = P[idx];
+    if (!p) continue;
+    html += '<tr>';
+    html += '<td><div class="pname">' + p.nombre + '</div></td>';
+    html += '<td><span class="vend">' + (p.vendedor === '-' ? '—' : p.vendedor) + '</span></td>';
+    html += '<td><span class="cat-pill">' + p.cat + '</span></td>';
+    html += '<td>' + bi(p.ventas) + '</td>';
+    html += '<td class="price">' + fmt(p.precio) + '</td>';
+    html += '<td><button class="star-btn starred" data-pidx="' + idx + '" onclick="toggleStar(' + idx + ',this)">★</button></td>';
+    html += '</tr>';
+  }
+  tb.innerHTML = html;
+  renderHunt();
+}
+
+// ─── BÚSQUEDA E HISTORIAL ─────────────────────────
+const HISTORY = [
+  { id: 'acc-cel', name: 'Accesorios celular', meta: 'Hoy · 53 productos', productos: 53, active: true },
+  { id: 'carg-ip', name: 'Cargadores iPhone', meta: 'Ayer · 41 productos', productos: 41, active: false },
+  { id: 'sop-auto', name: 'Soportes para auto', meta: 'Hace 3 días · 18 productos', productos: 18, active: false },
+];
+
+let histOpen = false;
+let activeHistId = 'acc-cel';
+
+function toggleHist() {
+  histOpen = !histOpen;
+  document.getElementById('hist-panel').classList.toggle('visible', histOpen);
+  document.getElementById('hist-toggle').classList.toggle('open', histOpen);
+  if (histOpen) renderHist();
+}
+
+function renderHist() {
+  const el = document.getElementById('hist-list');
+  el.innerHTML = HISTORY.map(h => `
+    <div class="hist-item ${h.id === activeHistId ? 'active-hist' : ''}" onclick="loadHist('${h.id}')">
+      <span class="hi-icon">🔍</span>
+      <div class="hi-info">
+        <div class="hi-name">${h.name}</div>
+        <div class="hi-meta">${h.meta}</div>
+      </div>
+      <span class="hi-badge ${h.id === activeHistId ? 'active-badge' : ''}">${h.id === activeHistId ? 'activo' : h.productos + ' prod.'}</span>
+      <button class="hi-del" onclick="event.stopPropagation();delHist('${h.id}')" title="Eliminar">×</button>
+    </div>`).join('');
+}
+
+function loadHist(id) {
+  activeHistId = id;
+  const h = HISTORY.find(x => x.id === id);
+  if (!h) return;
+  var inp = document.getElementById('hunt-cat-input'); if(inp) inp.value = h.name;
+  document.getElementById('hunt-sub').textContent = h.productos + ' productos · ' + h.name + ' · Selecciona modo de análisis';
+  renderHist();
+  histOpen = false;
+  document.getElementById('hist-panel').classList.remove('visible');
+  document.getElementById('hist-toggle').classList.remove('open');
+}
+
+function delHist(id) {
+  const idx = HISTORY.findIndex(h => h.id === id);
+  if (idx === -1) return;
+  HISTORY.splice(idx, 1);
+  if (activeHistId === id) activeHistId = HISTORY.length ? HISTORY[0].id : null;
+  renderHist();
+}
+
+function runSearch() {
+  const val = document.getElementById('hunt-cat-input') ? document.getElementById('hunt-cat-input').value.trim() : '';
+  if (!val) return;
+  fetchCategoria();
+}
+
+// ─── HUNTER v18 — API MELI ──────────────────────────────────
+var huntView = 'general';
+var huntGenData = [];
+var huntCatData = [];
+var huntCatFilter = 'all';
+var savedFilter = 'all';
+var savedItems = [];
+
+// Cargar guardados de localStorage
+function loadSaved() {
+  try {
+    var raw = localStorage.getItem('hunter_saved_v18');
+    savedItems = raw ? JSON.parse(raw) : [];
+  } catch(e) { savedItems = []; }
+  renderSavedV18();
+}
+
+function savePersist() {
+  try { localStorage.setItem('hunter_saved_v18', JSON.stringify(savedItems)); } catch(e) {}
+}
+
+function setHuntView(view, btn) {
+  huntView = view;
+  document.querySelectorAll('.hunt-view-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('hunt-view-general').style.display = view === 'general' ? 'block' : 'none';
+  document.getElementById('hunt-view-categoria').style.display = view === 'categoria' ? 'block' : 'none';
+}
+
+// Helpers visual
+function ventasBadge(sold) {
+  if (!sold && sold !== 0) return '<span class="badge b100" style="opacity:0.5">—</span>';
+  var v = parseInt(sold);
+  var cls = v >= 50000 ? 'b50000' : v >= 10000 ? 'b10000' : v >= 5000 ? 'b5000' : v >= 1000 ? 'b1000' : v >= 500 ? 'b500' : v >= 100 ? 'b100' : 'b50';
+  var label = v >= 1000 ? '+' + (v/1000).toFixed(v%1000===0?0:1) + 'K' : '+' + v;
+  return '<span class="badge ' + cls + '">' + label + '</span>';
+}
+
+function fullBadge(shipping) {
+  var isFull = shipping && (shipping.logistic_type === 'fulfillment' || (shipping.tags && shipping.tags.indexOf('fulfillment') >= 0));
+  return isFull
+    ? '<span class="full-badge full-yes">✓ Full</span>'
+    : '<span class="full-badge full-no">Flex/Nor</span>';
+}
+
+function rankNum(i) {
+  var cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+  return '<span class="rank-num ' + cls + '">' + (i+1) + '</span>';
+}
+
+function fmtPrice(p) {
+  if (!p) return '<span style="color:var(--muted)">—</span>';
+  return '<span class="price">$' + Math.round(p).toLocaleString('es-CL') + '</span>';
+}
+
+function isStarred(id) {
+  return savedItems.some(function(s){ return s.id === id; });
+}
+
+function buildHuntRow(item, i, sourceList) {
+  var starred = isStarred(item.id);
+  var sellerName = (item.seller && item.seller.nickname) ? item.seller.nickname : (item.seller_id ? '—' : '—');
+  var sold = item.sold_quantity;
+  var shipping = item.shipping || {};
+  var isFull = shipping.logistic_type === 'fulfillment' || (shipping.tags && shipping.tags.indexOf('fulfillment') >= 0);
+  var link = 'https://www.mercadolibre.cl' + (item.permalink ? '' : '/p/' + item.id);
+  var actualLink = item.permalink || link;
+
+  return '<tr>' +
+    '<td>' + rankNum(i) + '</td>' +
+    '<td><div class="pname">' + (item.title || '—') + '</div>' +
+    '<a href="' + actualLink + '" target="_blank" class="link-btn">↗ ver</a></td>' +
+    '<td><span class="vend">' + sellerName + '</span></td>' +
+    '<td>' + (isFull ? '<span class="full-badge full-yes">✓ Full</span>' : '<span class="full-badge full-no">Flex/Nor</span>') + '</td>' +
+    '<td>' + ventasBadge(sold) + '</td>' +
+    '<td>' + fmtPrice(item.price) + '</td>' +
+    '<td><button class="star-btn ' + (starred ? 'starred' : '') + '" onclick="toggleStarV18(' + JSON.stringify(item).replace(/"/g, '&quot;') + ',this)" title="Guardar">' + (starred ? '★' : '☆') + '</button></td>' +
+    '<td></td>' +
+    '</tr>';
+}
+
+// ── VISTA GENERAL ──────────────────────────────────
+function fetchGeneral() {
+  var btn = document.getElementById('btn-refresh-gen');
+  var loading = document.getElementById('hunt-gen-loading');
+  var table = document.getElementById('hunt-gen-table');
+  var empty = document.getElementById('hunt-gen-empty');
+  btn.textContent = '↻ Cargando...';
+  btn.disabled = true;
+  loading.style.display = 'flex';
+  table.style.display = 'none';
+  empty.style.display = 'none';
+
+  // MELI API pública — top vendidos Chile (sin token, endpoint público)
+  fetch('https://api.mercadolibre.com/sites/MLC/search?sort=sold_quantity_desc&limit=20', { headers: meliHeaders() })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      huntGenData = data.results || [];
+      renderGeneral();
+      btn.textContent = '↻ Actualizar';
+      btn.disabled = false;
+      loading.style.display = 'none';
+    })
+    .catch(function(err) {
+      loading.style.display = 'none';
+      empty.style.display = 'block';
+      empty.innerHTML = '<div style="font-size:2rem;margin-bottom:10px;opacity:0.4">⚠</div><div style="color:var(--muted2)">No se pudo conectar con la API de MELI</div><div style="font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);margin-top:6px">Verifica tu conexión · ' + err.message + '</div>';
+      btn.textContent = '↻ Reintentar';
+      btn.disabled = false;
+    });
+}
+
+function renderGeneral() {
+  var tbody = document.getElementById('hunt-gen-tbody');
+  var table = document.getElementById('hunt-gen-table');
+  var empty = document.getElementById('hunt-gen-empty');
+  if (!huntGenData.length) { empty.style.display = 'block'; table.style.display = 'none'; return; }
+  table.style.display = 'block';
+  empty.style.display = 'none';
+  tbody.innerHTML = huntGenData.map(function(item, i){ return buildHuntRow(item, i, huntGenData); }).join('');
+}
+
+// ── VISTA POR CATEGORÍA ──────────────────────────────
+function fetchCategoria() {
+  var val = document.getElementById('hunt-cat-input').value.trim();
+  if (!val) return;
+  var loading = document.getElementById('hunt-cat-loading');
+  var result = document.getElementById('hunt-cat-result');
+  var empty = document.getElementById('hunt-cat-empty');
+  var msgEl = document.getElementById('hunt-cat-msg');
+  var btn = document.getElementById('btn-cat-go');
+
+  loading.style.display = 'flex';
+  result.style.display = 'none';
+  empty.style.display = 'none';
+  btn.textContent = 'Buscando...';
+  btn.disabled = true;
+  msgEl.textContent = 'Buscando "' + val + '" en MELI Chile...';
+
+  // Guardar en historial
+  addToHist(val);
+
+  fetch('https://api.mercadolibre.com/sites/MLC/search?q=' + encodeURIComponent(val) + '&sort=sold_quantity_desc&limit=20', { headers: meliHeaders() })
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      huntCatData = data.results || [];
+      huntCatFilter = 'all';
+      document.getElementById('hf-all').classList.add('active');
+      document.getElementById('hf-full').classList.remove('active');
+      var total = data.paging ? data.paging.total : huntCatData.length;
+      document.getElementById('hunt-cat-sub').textContent = 'Top ' + huntCatData.length + ' de ' + total.toLocaleString('es-CL') + ' resultados · "' + val + '" · MELI Chile';
+      renderCategoria();
+      loading.style.display = 'none';
+      btn.textContent = 'Buscar';
+      btn.disabled = false;
+    })
+    .catch(function(err) {
+      loading.style.display = 'none';
+      empty.style.display = 'block';
+      empty.innerHTML = '<div style="font-size:2rem;margin-bottom:10px;opacity:0.4">⚠</div><div style="color:var(--muted2)">Error al consultar la API</div><div style="font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);margin-top:6px">' + err.message + '</div>';
+      btn.textContent = 'Buscar';
+      btn.disabled = false;
+    });
+}
+
+function setHuntFilter(f, btn) {
+  huntCatFilter = f;
+  document.getElementById('hf-all').classList.remove('active');
+  document.getElementById('hf-full').classList.remove('active');
+  btn.classList.add('active');
+  renderCategoria();
+}
+
+function renderCategoria() {
+  var tbody = document.getElementById('hunt-cat-tbody');
+  var result = document.getElementById('hunt-cat-result');
+  var empty = document.getElementById('hunt-cat-empty');
+  var data = huntCatData;
+  if (huntCatFilter === 'full') {
+    data = data.filter(function(item){
+      var s = item.shipping || {};
+      return s.logistic_type === 'fulfillment' || (s.tags && s.tags.indexOf('fulfillment') >= 0);
+    });
+  }
+  if (!data.length) { result.style.display = 'none'; empty.style.display = 'block'; empty.innerHTML = '<div style="font-size:2rem;margin-bottom:10px;opacity:0.4">🔍</div><div>Sin resultados para el filtro seleccionado</div>'; return; }
+  result.style.display = 'block';
+  empty.style.display = 'none';
+  tbody.innerHTML = data.map(function(item, i){ return buildHuntRow(item, i, data); }).join('');
+}
+
+function exportHuntCSV() {
+  var data = huntCatFilter === 'full' ? huntCatData.filter(function(item){
+    var s = item.shipping || {};
+    return s.logistic_type === 'fulfillment' || (s.tags && s.tags.indexOf('fulfillment') >= 0);
+  }) : huntCatData;
+  var rows = [['#','Producto','Vendedor','Logística','Ventas','Precio','Link']];
+  data.forEach(function(item, i){
+    var s = item.shipping || {};
+    var isFull = s.logistic_type === 'fulfillment' || (s.tags && s.tags.indexOf('fulfillment') >= 0);
+    rows.push([i+1, item.title||'', (item.seller&&item.seller.nickname)||'', isFull?'Full':'Flex/Normal', item.sold_quantity||'', item.price||'', item.permalink||'']);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv); a.download = 'hunter-categoria.csv'; a.click();
+}
+
+// ── TOGGLE STAR v18 ──────────────────────────────────
+function toggleStarV18(item, btn) {
+  var idx = savedItems.findIndex(function(s){ return s.id === item.id; });
+  if (idx >= 0) {
+    savedItems.splice(idx, 1);
+    btn.textContent = '☆'; btn.classList.remove('starred');
+  } else {
+    var s = item.shipping || {};
+    var isFull = s.logistic_type === 'fulfillment' || (s.tags && s.tags.indexOf('fulfillment') >= 0);
+    savedItems.unshift({
+      id: item.id,
+      title: item.title,
+      seller: (item.seller && item.seller.nickname) || '—',
+      full: isFull,
+      sold: item.sold_quantity,
+      price: item.price,
+      link: item.permalink || '',
+      saved_at: new Date().toLocaleDateString('es-CL')
+    });
+    btn.textContent = '★'; btn.classList.add('starred');
+    btn.style.transform = 'scale(1.3)';
+    setTimeout(function(){ btn.style.transform = ''; }, 200);
+  }
+  savePersist();
+  updateSavedBadge();
+  renderSavedV18();
+}
+
+function updateSavedBadge() {
+  var el = document.getElementById('saved-cnt');
+  var badge = document.getElementById('saved-count-badge');
+  if (el) el.textContent = savedItems.length ? savedItems.length : '';
+  if (badge) badge.textContent = savedItems.length + ' producto' + (savedItems.length !== 1 ? 's' : '');
+}
+
+function setSavedFilter(f, btn) {
+  savedFilter = f;
+  document.querySelectorAll('#sf-all,#sf-full,#sf-hunter').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderSavedV18();
+}
+
+function renderSavedV18() {
+  var tbody = document.getElementById('saved-body');
+  var emptyMsg = document.getElementById('saved-empty-msg');
+  if (!tbody) return;
+  var data = savedItems;
+  if (savedFilter === 'full') data = data.filter(function(s){ return s.full; });
+  if (savedFilter === 'hunter') data = data.filter(function(s){ return s.sold >= 500; });
+  updateSavedBadge();
+  if (!data.length) {
+    tbody.innerHTML = '';
+    if (emptyMsg) emptyMsg.style.display = 'block';
+    return;
+  }
+  if (emptyMsg) emptyMsg.style.display = 'none';
+  tbody.innerHTML = data.map(function(item){
+    return '<tr>' +
+      '<td><div class="pname">' + (item.title||'—') + '</div>' +
+      (item.link ? '<a href="' + item.link + '" target="_blank" class="link-btn">↗ ver</a>' : '') + '</td>' +
+      '<td><span class="vend">' + (item.seller||'—') + '</span></td>' +
+      '<td>' + (item.full ? '<span class="full-badge full-yes">✓ Full</span>' : '<span class="full-badge full-no">Flex/Nor</span>') + '</td>' +
+      '<td>' + ventasBadge(item.sold) + '</td>' +
+      '<td>' + fmtPrice(item.price) + '</td>' +
+      '<td style="font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted)">' + (item.saved_at||'—') + '</td>' +
+      '<td><button class="star-btn starred" onclick="removeSaved(\'' + item.id + '\',this)" title="Quitar">★</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+function removeSaved(id, btn) {
+  savedItems = savedItems.filter(function(s){ return s.id !== id; });
+  savePersist();
+  renderSavedV18();
+  // actualizar estrella en tablas de hunter si están visibles
+  document.querySelectorAll('.star-btn.starred').forEach(function(b){
+    // ya se re-renderizará al volver a la vista
+  });
+}
+
+function clearAllSaved() {
+  if (!savedItems.length) return;
+  if (confirm('¿Limpiar todos los ' + savedItems.length + ' productos guardados?')) {
+    savedItems = [];
+    savePersist();
+    renderSavedV18();
+  }
+}
+
+function exportSavedCSV() {
+  if (!savedItems.length) return;
+  var rows = [['Producto','Vendedor','Logística','Ventas','Precio','Link','Guardado']];
+  savedItems.forEach(function(item){
+    rows.push([item.title||'', item.seller||'', item.full?'Full':'Flex/Normal', item.sold||'', item.price||'', item.link||'', item.saved_at||'']);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv); a.download = 'hunter-guardados.csv'; a.click();
+}
+
+// ── HISTORIAL ──────────────────────────────────
+function addToHist(val) {
+  var exists = HISTORY.find(function(h){ return h.name.toLowerCase() === val.toLowerCase(); });
+  if (!exists) {
+    HISTORY.unshift({ id: 'srch-' + Date.now(), name: val, meta: new Date().toLocaleDateString('es-CL') + ' · MELI Chile', productos: 0, active: true });
+    if (HISTORY.length > 10) HISTORY.pop();
+  }
+  activeHistId = exists ? exists.id : HISTORY[0].id;
+  renderHist();
+}
+
+</script>
+</body>
+</html>
